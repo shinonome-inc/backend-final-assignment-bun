@@ -11,7 +11,7 @@ User = get_user_model()
 
 class SignUpView(CreateView):
     template_name = 'accounts/signup.html'
-    form_class = SignUpForm #Emailを書かせるためにUserCreationFormじゃない
+    form_class = SignUpForm
     success_url = reverse_lazy('accounts:home')
 
 #なにこれ

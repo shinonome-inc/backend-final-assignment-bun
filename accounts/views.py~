@@ -1,16 +1,17 @@
 from django.shortcuts import render
 
 from django.contrib.auth import get_user_model, login, authenticate #なぜか順番変えたらエラーになった
-from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import CreateView, TemplateView
 from django.urls import reverse_lazy
+
+from .forms import SignUpForm
 # Create your views here.
 
 User = get_user_model()
 
 class SignUpView(CreateView):
     template_name = 'accounts/signup.html'
-    form_class = UserCreationForm
+    form_class = SignUpForm #Emailを書かせるためにUserCreationFormじゃない
     success_url = reverse_lazy('accounts:home')
 
 #なにこれ
