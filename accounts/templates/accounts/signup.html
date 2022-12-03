@@ -3,12 +3,12 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>フォーム</title>
+    <title>登録</title>
 </head>
 
 <body>
   <a href="/">TwitterClone</a>
-    <h1>ユーザーフォーム</h1>
+    <h1>登録</h1>
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
