@@ -1,20 +1,23 @@
 from django.shortcuts import render
 
-from django.contrib.auth import get_user_model, login, authenticate #なぜか順番変えたらエラーになった
+from django.contrib.auth import get_user_model, login, authenticate  # なぜか順番変えたらエラーになった
 from django.views.generic import CreateView, TemplateView
 from django.urls import reverse_lazy
 
 from .forms import SignUpForm
+
 # Create your views here.
 
 User = get_user_model()
 
-class SignUpView(CreateView):
-    template_name = 'accounts/signup.html'
-    form_class = SignUpForm
-    success_url = reverse_lazy('accounts:home')
 
-#なにこれ
+class SignUpView(CreateView):
+    template_name = "accounts/signup.html"
+    form_class = SignUpForm
+    success_url = reverse_lazy("accounts:home")
+
+
+# なにこれ
 
 #    def form_valid(self, form):
 #        response = super().form_valid(form)
@@ -25,8 +28,10 @@ class SignUpView(CreateView):
 #            login(self.request, user)
 #            return response
 
+
 class HomeView(TemplateView):
     template_name = "accounts/home.html"
+
 
 class WelcomeView(TemplateView):
     template_name = "welcome/index.html"
