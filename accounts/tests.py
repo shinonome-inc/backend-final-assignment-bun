@@ -8,7 +8,10 @@ User = get_user_model()
 
 class TestSignUpView(TestCase):
     def test_success_get(self):
-        pass
+        response =
+# ほんとはClientのimportが必要っぽい。今回はtest.pyの中なので大丈夫
+        self.client.get(self):
+
 
     def test_success_post(self):
         pass
