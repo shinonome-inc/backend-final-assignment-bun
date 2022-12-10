@@ -1,13 +1,14 @@
 from django.test import TestCase
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, SESSION_KEY
 from django.urls import reverse
+
 
 User = get_user_model()
 
 
 class TestSignUpView(TestCase):
-    def test_success_get(self): #クラスの中で定義される関数はメソッド
+    def test_success_get(self):  # クラスの中で定義される関数はメソッド
         # サーバーから情報を取得できるかtest
 
         # ほんとはClientのimportが必要っぽい。今回はtest.pyの中なので大丈夫
@@ -32,20 +33,21 @@ class TestSignUpView(TestCase):
         }
         response = self.client.post(reverse("accounts:signup"), user)
         self.assertTrue(
+            # filterはモデルとobjectにくっつける
             User.objects.filter(username="test", email="test@example.com").exists()
         )
+        # SimpleTestCase.assertRedirects(response, expected_url, status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         self.assertRedirects(
             response,
             reverse("accounts:home"),
-            status_code=302,
-            target_status_code=200,
-            msg_prefix="",
-            fetch_redirect_response=True,
+            status_code=302,  # はじめに返ってくるHTTPレスポンスコード
+            target_status_code=200,  # 最終的に返ってくるHTTPのレスポンスコード
+            msg_prefix="",  # テスト結果のメッセージのプレフィックス
+            fetch_redirect_response=True,  # 最終ページをロードするか否か
         )
-        self.assertIn(SESSION_KEY, self.client.session)
-        pass
+        self.assertIn(SESSION_KEY, self.client.session)  #sessionを使うならsetting.pyを書き換え,AinBの確認。
 
-    #以降ちゃんとエラーでてくれるかtest
+    # 以降ちゃんとエラーでてくれるかtest
     def test_failure_post_with_empty_form(self):
         pass
 
