@@ -8,15 +8,21 @@ User = get_user_model()
 
 
 class TestSignUpView(TestCase):
-    def test_success_get(self):  # クラスの中で定義される関数はメソッド
-        # サーバーから情報を取得できるかtest
+    def setUp(self):
+        self.url = reverse("accounts:signup")
 
-        # ほんとはClientのimportが必要っぽい。今回はtest.pyの中なので大丈夫
-        # status_codeは404みたいなやつ。200はリクエスト成功
-        # reverseでURL取得、client.getを実行。client,getはTestCaseで定義されてる
-        # assert*はunittest等も多い
+    def test_success_get(self):
+        """
+        クラスの中で定義される関数はメソッド
+        サーバーから情報を取得できるかtest
 
-        response = self.client.get(reverse("accounts:signup"))
+        ほんとはClientのimportが必要っぽい。今回はtest.pyの中なので大丈夫
+        status_codeは404みたいなやつ。200はリクエスト成功
+        reverseでURL取得、client.getを実行。client,getはTestCaseで定義されてる
+        assert*はunittest等も多い
+        """
+
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/signup.html")
 
@@ -31,7 +37,7 @@ class TestSignUpView(TestCase):
             "password1": "goodpass",
             "password2": "goodpass",
         }
-        response = self.client.post(reverse("accounts:signup"), user)
+        response = self.client.post(self.url, user)
         self.assertTrue(
             # filterはモデルとobjectにくっつける
             User.objects.filter(username="test", email="test@example.com").exists()
@@ -45,11 +51,23 @@ class TestSignUpView(TestCase):
             msg_prefix="",  # テスト結果のメッセージのプレフィックス
             fetch_redirect_response=True,  # 最終ページをロードするか否か
         )
-        self.assertIn(SESSION_KEY, self.client.session)  #sessionを使うならsetting.pyを書き換え,AinBの確認。
+
+        self.assertIn(
+            SESSION_KEY, self.client.session
+            )  # sessionを使うならsetting.pyを書き換え,AinBの確認。
 
     # 以降ちゃんとエラーでてくれるかtest
     def test_failure_post_with_empty_form(self):
-        pass
+        invalid_data = {
+            "email": "",
+            "username": "",
+            "password1": "",
+            "password2": "",
+        }
+        response = self.client.post(self.url, invalid_data)
+        form = response.context['form']
+        print(form.errors)
+
 
     def test_failure_post_with_empty_username(self):
         pass

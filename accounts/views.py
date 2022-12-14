@@ -16,17 +16,14 @@ class SignUpView(CreateView):
     form_class = SignUpForm
     success_url = reverse_lazy("accounts:home")
 
-
-# なんだこれ
-
-#    def form_valid(self, form):
-#        response = super().form_valid(form)
-#        username = form.cleaned_data['username']
-#        password = form.cleaned_data['password1']
-#        user = authenticate(self.request, username=username, password=password)
-#        if user is not None:
-#            login(self.request, user)
-#            return response
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        username = form.cleaned_data['username']
+        password = form.cleaned_data['password1']
+        user = authenticate(self.request, username=username, password=password)
+        if user is not None:
+            login(self.request, user)
+            return response
 
 
 class HomeView(TemplateView):
