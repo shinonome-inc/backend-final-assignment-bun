@@ -23,4 +23,4 @@ class SignUpView(CreateView):
             login(self.request, user)
             return response
         else:
-            return redirect(reverse('welcome:top'))
+            return redirect(reverse("welcome:top"))
