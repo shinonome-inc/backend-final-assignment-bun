@@ -11,13 +11,12 @@
 <body>
     <header>
         <h4 class="title">
-            <a href="/">Twitter Clone</a>
+            <a href="{% url 'welcome:top' %}">Twitter Clone</a>
         </h4>
     <nav class="nav">
       <ul class="menu-group">
         <li class="menu-item"><a href="#">ログイン</a></li>
         <li class="menu-item"><a href="{% url 'accounts:signup' %}">登録</a></li>
-        <li class="menu-item"><a href="{% url 'welcome:top' %}">welcome</a></li>
       </ul>
     </nav>
   </header>
