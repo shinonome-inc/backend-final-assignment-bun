@@ -3,5 +3,6 @@ from django.views.generic import TemplateView
 
 # Create your views here.
 
+
 class WelcomeView(TemplateView):
-    template_name="welcome/index.html"
+    template_name = "welcome/index.html"

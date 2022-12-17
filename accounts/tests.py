@@ -17,7 +17,7 @@ class TestSignUpView(TestCase):
         サーバーから情報を取得できるかtest
 
         ほんとはClientのimportが必要っぽい。今回はtest.pyの中なので大丈夫
-				↑TestCaseではインスタンスにclientが定義されている!
+                                ↑TestCaseではインスタンスにclientが定義されている!
         status_codeは404みたいなやつ。200はリクエスト成功
         reverseでURL取得、client.getを実行。client,getはTestCaseで定義されてる
         assert*はunittest等も多い
@@ -61,17 +61,17 @@ class TestSignUpView(TestCase):
             "password1": "",
             "password2": "",
         }
-#        response.context["form"]でhtml等の情報がすべて入る
-#        print("failure_post_with_empty_form:", form.errors, "\n")
-#        こんなかんじでデバッグ
+        #        response.context["form"]でhtml等の情報がすべて入る
+        #        print("failure_post_with_empty_form:", form.errors, "\n")
+        #        こんなかんじでデバッグ
 
-#        self.assertEqual(response.status_code, 200)
-#        self.assertFalse(User.objects.exists())
-#        self.assertFalse(form.is_valid())
-#        self.assertEqual(form.errors["email"], ["このフィールドは必須です。"])
-#        self.assertEqual(form.errors["username"], ["このフィールドは必須です。"])
-#        self.assertEqual(form.errors["password1"], ["このフィールドは必須です。"])
-#        self.assertEqual(form.errors["password2"], ["このフィールドは必須です。"])
+        #        self.assertEqual(response.status_code, 200)
+        #        self.assertFalse(User.objects.exists())
+        #        self.assertFalse(form.is_valid())
+        #        self.assertEqual(form.errors["email"], ["このフィールドは必須です。"])
+        #        self.assertEqual(form.errors["username"], ["このフィールドは必須です。"])
+        #        self.assertEqual(form.errors["password1"], ["このフィールドは必須です。"])
+        #        self.assertEqual(form.errors["password2"], ["このフィールドは必須です。"])
         expected_errs = {
             "username": "このフィールドは必須です。",
             "email": "このフィールドは必須です。",
@@ -85,7 +85,6 @@ class TestSignUpView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 0)
 
-
     def test_failure_post_with_empty_username(self):
         data = {
             "username": "",
@@ -96,11 +95,11 @@ class TestSignUpView(TestCase):
         response = self.client.post(self.url, data)
         form = response.context["form"]
         expected_errs = {
-            "username":"このフィールドは必須です。",
+            "username": "このフィールドは必須です。",
         }
-        self.assertIn(expected_errs["username"],form.errors["username"])
+        self.assertIn(expected_errs["username"], form.errors["username"])
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(User.objects.count(),0)
+        self.assertEqual(User.objects.count(), 0)
 
     def test_failure_post_with_empty_email(self):
         data = {
@@ -225,7 +224,8 @@ class TestSignUpView(TestCase):
 
 
 class TestHomeView(TestCase):
-    def test_success_get(self): pass
+    def test_success_get(self):
+        pass
 
 
 class TestLoginView(TestCase):
