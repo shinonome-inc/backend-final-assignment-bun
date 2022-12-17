@@ -24,6 +24,8 @@ class SignUpView(CreateView):
         if user is not None:
             login(self.request, user)
             return response
+        else:
+            return render("accounts:welcome")
 
 
 class HomeView(TemplateView):
