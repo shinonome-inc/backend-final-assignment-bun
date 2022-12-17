@@ -4,8 +4,6 @@ from django.contrib.auth import get_user_model, SESSION_KEY
 from django.contrib.auth.models import User
 from django.urls import reverse
 
-from accounts.forms import SignUpForm
-
 User = get_user_model()
 
 
@@ -82,8 +80,8 @@ class TestSignUpView(TestCase):
         }
         response = self.client.post(self.url, data)
         form = response.context["form"]
-        for key, message in expected_errs.items():
-            self.assertIn(message, form.errors[key])
+        for key, value in expected_errs.items():
+            self.assertIn(value, form.errors[key])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 0)
 
@@ -98,10 +96,9 @@ class TestSignUpView(TestCase):
         response = self.client.post(self.url, data)
         form = response.context["form"]
         expected_errs = {
-       "username":"このフィールドは必須です。",
+            "username":"このフィールドは必須です。",
         }
-        for key, message in expected_errs.items():
-          self.assertIn(message,form.errors[key])
+        self.assertIn(expected_errs["username"],form.errors["username"])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(),0)
 
@@ -117,8 +114,7 @@ class TestSignUpView(TestCase):
         expected_errs = {
             "email": "このフィールドは必須です。",
         }
-        for key, message in expected_errs.items():
-            self.assertIn(message, form.errors[key])
+        self.assertIn(expected_errs["email"], form.errors["email"])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 0)
 
@@ -135,8 +131,8 @@ class TestSignUpView(TestCase):
             "password1": "このフィールドは必須です。",
             "password2": "このフィールドは必須です。",
         }
-        for key, message in expected_errs.items():
-            self.assertIn(message, form.errors[key])
+        for key, value in expected_errs.items():
+            self.assertIn(value, form.errors[key])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 0)
 
@@ -153,8 +149,7 @@ class TestSignUpView(TestCase):
         response = self.client.post(self.url, data2)
         form = response.context["form"]
         expected_errs = {"username": "同じユーザー名が既に登録済みです。"}
-        for key, message in expected_errs.items():
-            self.assertIn(message, form.errors[key])
+        self.assertIn(expected_errs["username"], form.errors["username"])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 1)
 
@@ -165,11 +160,10 @@ class TestSignUpView(TestCase):
             "password1": "test0000",
             "password2": "test0000",
         }
-        form = SignUpForm(data)
-        expected_errs = {"email": "有効なメールアドレスを入力してください。"}
-        for key, message in expected_errs.items():
-            self.assertIn(message, form.errors[key])
         response = self.client.post(self.url, data)
+        form = response.context["form"]
+        expected_errs = {"email": "有効なメールアドレスを入力してください。"}
+        self.assertIn(expected_errs["email"], form.errors["email"])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 0)
 
@@ -183,8 +177,7 @@ class TestSignUpView(TestCase):
         response = self.client.post(self.url, data)
         form = response.context["form"]
         expected_errs = {"password2": "このパスワードは短すぎます。最低 8 文字以上必要です。"}
-        for key, message in expected_errs.items():
-            self.assertIn(message, form.errors[key])
+        self.assertIn(expected_errs["password2"], form.errors["password2"])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 0)
 
@@ -198,8 +191,7 @@ class TestSignUpView(TestCase):
         response = self.client.post(self.url, data)
         form = response.context["form"]
         expected_errs = {"password2": "このパスワードは ユーザー名 と似すぎています。"}
-        for key, message in expected_errs.items():
-            self.assertIn(message, form.errors[key])
+        self.assertIn(expected_errs["password2"], form.errors["password2"])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 0)
 
@@ -213,8 +205,7 @@ class TestSignUpView(TestCase):
         response = self.client.post(self.url, data)
         form = response.context["form"]
         expected_errs = {"password2": "このパスワードは数字しか使われていません。"}
-        for key, message in expected_errs.items():
-            self.assertIn(message, form.errors[key])
+        self.assertIn(expected_errs["password2"], form.errors["password2"])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 0)
 
@@ -228,8 +219,7 @@ class TestSignUpView(TestCase):
         response = self.client.post(self.url, data)
         form = response.context["form"]
         expected_errs = {"password2": "確認用パスワードが一致しません。"}
-        for key, message in expected_errs.items():
-            self.assertIn(message, form.errors[key])
+        self.assertIn(expected_errs["password2"], form.errors["password2"])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 0)
 
