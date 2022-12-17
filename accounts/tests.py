@@ -42,7 +42,7 @@ class TestSignUpView(TestCase):
         )
         self.assertRedirects(
             response,
-            reverse("accounts:home"),
+            reverse("tweets:home"),
             status_code=302,  # はじめに返ってくるHTTPレスポンスコード
             target_status_code=200,  # 最終的に返ってくるHTTPのレスポンスコード
             msg_prefix="",  # テスト結果のメッセージのプレフィックス

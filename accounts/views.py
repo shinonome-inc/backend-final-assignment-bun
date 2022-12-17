@@ -1,12 +1,10 @@
-from django.shortcuts import render
-
 from django.contrib.auth import get_user_model, login, authenticate  # なぜか順番変えたらエラーになった
-from django.views.generic import CreateView, TemplateView
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.views.generic import CreateView, TemplateView
 
 from .forms import SignUpForm
 
-# Create your views here.
 
 User = get_user_model()
 
@@ -25,4 +23,4 @@ class SignUpView(CreateView):
             login(self.request, user)
             return response
         else:
-            return redirect("welcome:top")
+            return redirect(reverse('welcome:top'))
