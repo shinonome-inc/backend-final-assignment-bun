@@ -14,7 +14,7 @@ User = get_user_model()
 class SignUpView(CreateView):
     template_name = "accounts/signup.html"
     form_class = SignUpForm
-    success_url = reverse_lazy("accounts:home")
+    success_url = reverse_lazy("tweets:home")
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -26,11 +26,3 @@ class SignUpView(CreateView):
             return response
         else:
             return render("accounts:welcome")
-
-
-class HomeView(TemplateView):
-    template_name = "accounts/home.html"
-
-
-class WelcomeView(TemplateView):
-    template_name = "welcome/index.html"
