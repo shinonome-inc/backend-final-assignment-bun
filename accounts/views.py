@@ -1,10 +1,11 @@
-from django.contrib.auth import get_user_model, login, authenticate
-from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, get_user_model, login
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
 
-from .forms import SignUpForm
-
+from .forms import LoginForm, SignUpForm
 
 User = get_user_model()
 
@@ -24,3 +25,12 @@ class SignUpView(CreateView):
             return response
         else:
             return redirect("welcome:top")
+
+
+class LoginView(LoginView):
+    form_class = LoginForm
+    template_name = "accounts/login.html"
+
+
+class LogoutView(LoginRequiredMixin, LogoutView):
+    template_name = "welcome/index.html"
