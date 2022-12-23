@@ -130,3 +130,7 @@ AUTH_USER_MODEL = "accounts.User"
 LOGIN_URL = "/"
 #LOGIN_REDIRECT_URL = "/tweets/home/"
 LOGOUT_REDIRECT_URL = "/"
+
+import os
+username = str(os.getlogin())
+LOGIN_REDIRECT_URL="/accounts/" + username + "/profile"

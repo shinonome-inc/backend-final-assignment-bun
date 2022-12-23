@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
@@ -36,7 +37,9 @@ class LogoutView(LoginRequiredMixin, LogoutView):
     template_name = "welcome/index.html"
 
 
-class UserProfileView(View):
-    def get(self, request, parameter):
-        params = {'parameter':parameter}
-        return render(request, 'accounts/profile.html', params)
+class UserProfileView(TemplateView):
+    def get_username(self, **kwargs):
+        username = super().get_username(**kwargs)
+        return username
+
+    template_name = "accounts/profile.html"
