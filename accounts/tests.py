@@ -2,6 +2,7 @@ from django.contrib.auth import SESSION_KEY, get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+from mysite import settings
 
 User = get_user_model()
 
@@ -228,11 +229,36 @@ class TestHomeView(TestCase):
 
 
 class TestLoginView(TestCase):
+    def setUp(self):
+        user = {
+            "email": "hogefuga@fuga.com",
+            "username": "hoge",
+            "password1": "pass0000",
+            "password2": "pass0000",
+        }
+        User.objects.create_user(user["username"], user["email"], user["password1"])
     def test_success_get(self):
-        pass
+        response = self.client.get(reverse("accounts:login"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/login.html")
 
     def test_success_post(self):
-        pass
+        loginPost = {
+                "username":"hoge",
+                "password":"pass0000",
+                }
+        response = self.client.post(reverse("accounts:login"), loginPost)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse(settings.LOGIN_REDIRECT_URL),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+        self.assertIn(SESSION_KEY, self.client.session)
+
 
     def test_failure_post_with_not_exists_user(self):
         pass
