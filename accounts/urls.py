@@ -10,7 +10,10 @@ urlpatterns = [
     path("logout/", views.LogoutView.as_view(), name="logout"),
     # path("home/", views.HomeView.as_view(), name="home"),
     # path('', include('django.contrib.auth.urls')),
-    path('<str:username>/profile/', views.UserProfileView.as_view(), name='user_profile'),
+    # https://docs.djangoproject.com/ja/4.1/intro/overview/
+    path(
+        "<str:username>/profile/", views.UserProfileView.as_view(), name="user_profile"
+    ),
     # path('profile/edit/', views.UserProfileEditView.as_view(), name='user_profile_edit'),
     # path('<str:username>/following_list/', views.FollowingListView.as_view(), name='following_list'),
     # path('<str:username>/follower_list/', views.FollowerListView.as_view(), name='follower_list'),
