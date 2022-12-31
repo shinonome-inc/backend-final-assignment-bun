@@ -38,7 +38,6 @@ class LogoutView(LoginRequiredMixin, LogoutView):
 
 
 class UserProfileView(LoginRequiredMixin, DetailView):
-    # ログインしてない人のアカウント名でもページ遷移してまう
     def get(self, request, *args, **kwargs):
         requested_user = get_object_or_404(User, username=kwargs.get("username"))
         if self.request.user != requested_user:
@@ -55,12 +54,3 @@ class UserProfileView(LoginRequiredMixin, DetailView):
                 "requested_username": requested_username,
             }
             return render(request, "accounts/profile.html", context)
-
-
-# class UserProfileView(TemplateView):
-#    def get_username(self, **kwargs):
-#        username = super().get_username(**kwargs)
-#        return username
-#    username = get_username()
-#
-#    template_name = "accounts/profile.html"

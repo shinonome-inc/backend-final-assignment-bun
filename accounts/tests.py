@@ -258,15 +258,38 @@ class TestLoginView(TestCase):
         self.assertIn(SESSION_KEY, self.client.session)
 
     def test_failure_post_with_not_exists_user(self):
-        pass
+        loginPost = {
+            "username": "fuga",
+            "password": "pass1111",
+        }
+        response = self.client.post(self.login, loginPost)
+        form = LoginForm(data=loginPost)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
     def test_failure_post_with_empty_password(self):
-        pass
+        loginPost = {
+            "username": "hoge",
+            "password": "",
+        }
+        response = self.client.post(self.login, loginPost)
+        form = LoginForm(data=loginPost)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
 
 class TestLogoutView(TestCase):
     def test_success_get(self):
-        pass
+        logoutPost = User.objects.create_user(
+            username="hoge", password="pass0000", email="hoge@fuga.com"
+        )
+        self.client.force_login(logoutPost)
+
+        response = self.client.post(reverse("accounts:logout"))
+        self.assertRedirects(response, reverse(settings.LOGOUT_REDIRECT_URL), 302, 200)
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
 
 class TestUserProfileView(TestCase):
