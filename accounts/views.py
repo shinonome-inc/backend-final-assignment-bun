@@ -1,9 +1,10 @@
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.shortcuts import redirect, render, get_object_or_404
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView, View, DetailView
+from django.views.generic import CreateView, DetailView, TemplateView, View
 
 from .forms import LoginForm, SignUpForm
 
@@ -40,17 +41,20 @@ class UserProfileView(LoginRequiredMixin, DetailView):
     # ログインしてない人のアカウント名でもページ遷移してまう
     def get(self, request, *args, **kwargs):
         requested_user = get_object_or_404(User, username=kwargs.get("username"))
-        requested_username = requested_user.get_username()
-        #        user_tweets = Tweet.objects.filter(user=requested_user)
-        #        follower_count = FriendShip.objects.filter(followee=requested_user).count()
-        #        followee_count = FriendShip.objects.filter(follower=requested_user).count()
-        context = {
-            #            "follower_count": follower_count,
-            #            "followee_count": followee_count,
-            #            "user_tweets": user_tweets,
-            "requested_username": requested_username,
-        }
-        return render(request, "accounts/profile.html", context)
+        if self.request.user != requested_user:
+            raise Http404
+        else:
+            requested_username = requested_user.get_username()
+            #        user_tweets = Tweet.objects.filter(user=requested_user)
+            #        follower_count = FriendShip.objects.filter(followee=requested_user).count()
+            #        followee_count = FriendShip.objects.filter(follower=requested_user).count()
+            context = {
+                #            "follower_count": follower_count,
+                #            "followee_count": followee_count,
+                #            "user_tweets": user_tweets,
+                "requested_username": requested_username,
+            }
+            return render(request, "accounts/profile.html", context)
 
 
 # class UserProfileView(TemplateView):
