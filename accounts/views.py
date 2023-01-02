@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, TemplateView, View
 
-from .forms import LoginForm, SignUpForm
+from .forms import SignUpForm
 
 User = get_user_model()
 
@@ -29,7 +29,6 @@ class SignUpView(CreateView):
 
 
 class LoginView(LoginView):
-    form_class = LoginForm
     template_name = "accounts/login.html"
 
 
