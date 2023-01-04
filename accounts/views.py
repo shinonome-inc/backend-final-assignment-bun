@@ -6,6 +6,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, TemplateView, View
 
+from mysite import settings
+
 from .forms import SignUpForm
 
 User = get_user_model()
@@ -14,7 +16,7 @@ User = get_user_model()
 class SignUpView(CreateView):
     template_name = "accounts/signup.html"
     form_class = SignUpForm
-    success_url = reverse_lazy("tweets:home")
+    success_url = reverse_lazy(settings.LOGIN_REDIRECT_URL)
 
     def form_valid(self, form):
         response = super().form_valid(form)
