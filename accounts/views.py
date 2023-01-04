@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, get_user_model, login
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -30,11 +30,11 @@ class SignUpView(CreateView):
             return redirect("welcome:top")
 
 
-class LoginView(LoginView):
+class LoginView(auth_views.LoginView):
     template_name = "accounts/login.html"
 
 
-class LogoutView(LoginRequiredMixin, LogoutView):
+class LogoutView(LoginRequiredMixin, auth_views.LogoutView):
     template_name = "welcome/index.html"
 
 
