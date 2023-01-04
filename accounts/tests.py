@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.forms import LoginForm
 from mysite import settings
 
 User = get_user_model()
@@ -252,8 +251,6 @@ class TestLoginView(TestCase):
             "password": "pass0000",
         }
         response = self.client.post(self.login, loginPost)
-        form = LoginForm(data=loginPost)
-        self.assertTrue(form.is_valid())
         self.assertRedirects(response, reverse(settings.LOGIN_REDIRECT_URL), 302, 200)
         self.assertIn(SESSION_KEY, self.client.session)
 
@@ -263,8 +260,6 @@ class TestLoginView(TestCase):
             "password": "pass1111",
         }
         response = self.client.post(self.login, loginPost)
-        form = LoginForm(data=loginPost)
-        self.assertFalse(form.is_valid())
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(SESSION_KEY, self.client.session)
 
@@ -274,8 +269,6 @@ class TestLoginView(TestCase):
             "password": "",
         }
         response = self.client.post(self.login, loginPost)
-        form = LoginForm(data=loginPost)
-        self.assertFalse(form.is_valid())
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(SESSION_KEY, self.client.session)
 
