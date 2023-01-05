@@ -260,7 +260,7 @@ class TestLoginView(TestCase):
             "password": "pass1111",
         }
         response = self.client.post(self.login, loginPost)
-        form = response.context['form']
+        form = response.context["form"]
         self.assertFalse(form.is_valid())
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(SESSION_KEY, self.client.session)
@@ -271,7 +271,7 @@ class TestLoginView(TestCase):
             "password": "",
         }
         response = self.client.post(self.login, loginPost)
-        form = response.context['form']
+        form = response.context["form"]
         self.assertFalse(form.is_valid())
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(SESSION_KEY, self.client.session)
