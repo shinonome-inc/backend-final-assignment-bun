@@ -40,17 +40,8 @@ class LogoutView(LoginRequiredMixin, auth_views.LogoutView):
 class UserProfileView(LoginRequiredMixin, DetailView):
     def get(self, request, *args, **kwargs):
         requested_user = get_object_or_404(User, username=kwargs.get("username"))
-        if self.request.user != requested_user:
-            raise Http404
-        else:
-            requested_username = requested_user.get_username()
-            #        user_tweets = Tweet.objects.filter(user=requested_user)
-            #        follower_count = FriendShip.objects.filter(followee=requested_user).count()
-            #        followee_count = FriendShip.objects.filter(follower=requested_user).count()
-            context = {
-                #            "follower_count": follower_count,
-                #            "followee_count": followee_count,
-                #            "user_tweets": user_tweets,
-                "requested_username": requested_username,
-            }
-            return render(request, "accounts/profile.html", context)
+        requested_username = requested_user.get_username()
+        context = {
+            "requested_username": requested_username,
+        }
+        return render(request, "accounts/profile.html", context)

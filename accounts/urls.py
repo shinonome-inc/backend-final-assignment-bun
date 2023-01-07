@@ -9,7 +9,6 @@ urlpatterns = [
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
     # path("home/", views.HomeView.as_view(), name="home"),
-    # https://docs.djangoproject.com/ja/4.1/intro/overview/
     path(
         "<str:username>/profile/", views.UserProfileView.as_view(), name="user_profile"
     ),

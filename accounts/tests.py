@@ -251,6 +251,7 @@ class TestLoginView(TestCase):
             "password": "pass0000",
         }
         response = self.client.post(self.login, loginPost)
+        form = response.context["form"]
         self.assertRedirects(response, reverse(settings.LOGIN_REDIRECT_URL), 302, 200)
         self.assertIn(SESSION_KEY, self.client.session)
 
@@ -278,12 +279,13 @@ class TestLoginView(TestCase):
 
 
 class TestLogoutView(TestCase):
-    def test_success_get(self):
+    def setUp(self):
         logoutPost = User.objects.create_user(
             username="hoge", password="pass0000", email="hoge@fuga.com"
         )
         self.client.force_login(logoutPost)
 
+    def test_success_get(self):
         response = self.client.post(reverse("accounts:logout"))
         self.assertRedirects(response, reverse(settings.LOGOUT_REDIRECT_URL), 302, 200)
         self.assertNotIn(SESSION_KEY, self.client.session)
