@@ -251,7 +251,6 @@ class TestLoginView(TestCase):
             "password": "pass0000",
         }
         response = self.client.post(self.login, loginPost)
-        form = response.context["form"]
         self.assertRedirects(response, reverse(settings.LOGIN_REDIRECT_URL), 302, 200)
         self.assertIn(SESSION_KEY, self.client.session)
 
@@ -261,9 +260,13 @@ class TestLoginView(TestCase):
             "password": "pass1111",
         }
         response = self.client.post(self.login, loginPost)
+        self.assertEqual(response.status_code, 200)
         form = response.context["form"]
         self.assertFalse(form.is_valid())
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            form.errors["__all__"],
+            ["正しいユーザー名とパスワードを入力してください。どちらのフィールドも大文字と小文字は区別されます。"],
+        )
         self.assertNotIn(SESSION_KEY, self.client.session)
 
     def test_failure_post_with_empty_password(self):
@@ -272,9 +275,13 @@ class TestLoginView(TestCase):
             "password": "",
         }
         response = self.client.post(self.login, loginPost)
+        self.assertEqual(response.status_code, 200)
         form = response.context["form"]
         self.assertFalse(form.is_valid())
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            form.errors["password"],
+            ["このフィールドは必須です。"],
+        )
         self.assertNotIn(SESSION_KEY, self.client.session)
 
 
