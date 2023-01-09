@@ -3,11 +3,41 @@
 {% block h1 %}ホーム{% endblock %}
 
 {% block content %}
-<!--
 <div class="container">
     <h1 class="my-5"></h1>
     <p>{{ user.username }}さん、こんにちは。</p>
-    --!>
     <a href="{% url 'accounts:logout' %}">ログアウト</a>
+    <h2>
+        {% if request.user.is_authenticated %}
+        {{ request.user.username }}
+        <div>
+            <table border="1">
+                <tr>
+                    <th>ID</th>
+                    <th>内容</th>
+                    <th>作成日</th>
+                    <th>ユーザー</th>
+                    <th>削除</th>
+                </tr>
+                {% for tweet in tweets %}
+                <tr>
+                    <td>{{ tweet.id }}</td>
+                    <td><a href={% url 'tweets:detail' tweet.pk %}>{{ tweet.content }}</a></td>
+                    <td>{{ tweet.created_at }}</td>
+                    <td>{{ tweet.user }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        {% else %}
+        現在ログインしていません
+        <div>
+            <a href="{% url 'accounts:signup' %}"><button>SignUp</button></a>
+            <a href="{% url 'accounts:login' %}"><button>ログイン</button></a>
+        </div>
+        {% endif %}
+    </h2>
+
 </div>
 {% endblock %}
