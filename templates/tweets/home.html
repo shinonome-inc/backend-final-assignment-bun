@@ -1,43 +1,70 @@
 {% extends 'base.html' %}
-{% block title %}ホーム{% endblock %}
-{% block h1 %}ホーム{% endblock %}
+{% load static %}
+
+{% block title %}
+HOME
+{% endblock title %}
 
 {% block content %}
-<div class="container">
-    <h1 class="my-5"></h1>
-    <p>{{ user.username }}さん、こんにちは。</p>
-    <a href="{% url 'accounts:logout' %}">ログアウト</a>
+  <h1>Backend Final Assignment</h1>
+    {% if request.user.is_authenticated %}
     <h2>
-        {% if request.user.is_authenticated %}
-        {{ request.user.username }}
-        <div>
-            <table border="1">
-                <tr>
-                    <th>ID</th>
-                    <th>内容</th>
-                    <th>作成日</th>
-                    <th>ユーザー</th>
-                    <th>削除</th>
-                </tr>
-                {% for tweet in tweets %}
-                <tr>
-                    <td>{{ tweet.id }}</td>
-                    <td><a href={% url 'tweets:detail' tweet.pk %}>{{ tweet.content }}</a></td>
-                    <td>{{ tweet.created_at }}</td>
-                    <td>{{ tweet.user }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-
-        {% else %}
-        現在ログインしていません
-        <div>
-            <a href="{% url 'accounts:signup' %}"><button>SignUp</button></a>
-            <a href="{% url 'accounts:login' %}"><button>ログイン</button></a>
-        </div>
-        {% endif %}
+      {{ request.user.username }}
     </h2>
-
-</div>
-{% endblock %}
+    <div>
+      <a href="{% url 'accounts:logout' %}"><button>logout</button></a>
+    </div>
+    <div>
+      <a href="{% url 'tweets:create' %}"><button>Tweet!</button></a>
+    </div>
+    <div>
+      <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>内容</th>
+            <th>作成日</th>
+            <th>ユーザー</th>
+            <th>いいね</th>
+            <th>いいね取消</th>
+            <th>削除</th>
+        </tr>
+        {% for tweets in tweet %}
+          <tr>
+            <td>{{ tweet.id }}</td>
+            <td><a href={% url 'tweets:detail' tweet.id %}>{{ tweet.content }}</a></td>
+            <td>{{ tweet.created_at }}</td>
+            <td>{{ tweet.user }}</td>
+            <td>
+              {% if tweet not in liked_tweets %}
+                <input id="like_button{{tweet.id}}" data-tweet-id={{tweet.id}} data-is-liked="false" data-tweet-url="{% url 'tweets:like' tweet.id %}" value="いいね" type="button" onclick="set_or_unset_like_tweet(event)" style="visibility:visible;">
+              {% else %}
+                <input id="like_button{{tweet.id}}" data-tweet-id={{tweet.id}} data-is-liked="false" data-tweet-url="{% url 'tweets:like' tweet.id %}" value="いいね" type="button" onclick="set_or_unset_like_tweet(event)" style="visibility:hidden;">
+              {% endif %}
+            </td>
+            <td>
+              {% if tweet in liked_tweets %}
+                <input id="unlike_button{{tweet.id}}" data-tweet-id={{tweet.id}} data-is-liked="true" data-tweet-url="{% url 'tweets:unlike' tweet.id %}" value="いいね取消" type="button" onclick="set_or_unset_like_tweet(event)" style="visibility:visible;">
+              {% else %}
+                <input id="unlike_button{{tweet.id}}" data-tweet-id={{tweet.id}} data-is-liked="true" data-tweet-url="{% url 'tweets:unlike' tweet.id %}" value="いいね取消" type="button" onclick="set_or_unset_like_tweet(event)" style="visibility:hidden;">
+              {% endif %}
+            </td>
+            <td>
+              {% if tweet.user == request.user %}
+                <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
+                  {% csrf_token %}
+                  <button type="submit">削除</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% else %}
+    現在ログインしていません
+    <div>
+      <a href="{% url 'accounts:signup' %}"><button>SignUp</button></a>
+      <a href="{% url 'accounts:login' %}"><button>login</button></a>
+    </div>
+    {% endif %}
+{% endblock content %}

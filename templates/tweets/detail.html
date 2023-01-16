@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title%} ツイート {% endblock %}
+
+{% block content %}
+<div>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>内容</th>
+            <th>作成日</th>
+            {% if is_tweet_user %}
+            <th>削除</th>
+            {% endif %}
+            <th>いいね数</th>
+        </tr>
+        <tr>
+            <td>{{tweet.pk}}</td>
+            <td>{{tweet.content}}</td>
+            <td>{{tweet.created_at}}</td>
+            {% if is_tweet_user %}
+            <td><a href={% url 'tweets:delete' tweet.pk %}>削除</a></td>
+            {% endif %}
+            <td>{{ favorite_count }}</td>
+        </tr>
+    </table>
+</div>
+{% endblock content %}
