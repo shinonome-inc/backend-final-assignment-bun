@@ -24,33 +24,17 @@ HOME
             <th>内容</th>
             <th>作成日</th>
             <th>ユーザー</th>
-            <th>いいね</th>
-            <th>いいね取消</th>
             <th>削除</th>
         </tr>
         {% for tweets in tweet %}
           <tr>
-            <td>{{ tweet.id }}</td>
-            <td><a href={% url 'tweets:detail' tweet.id %}>{{ tweet.content }}</a></td>
-            <td>{{ tweet.created_at }}</td>
-            <td>{{ tweet.user }}</td>
+            <td>{{ tweets.id }}</td>
+            <td><a href={% url 'tweets:detail' tweets.id %}>{{ tweets.content }}</a></td>
+            <td>{{ tweets.created_at }}</td>
+            <td>{{ tweets.user }}</td>
             <td>
-              {% if tweet not in liked_tweets %}
-                <input id="like_button{{tweet.id}}" data-tweet-id={{tweet.id}} data-is-liked="false" data-tweet-url="{% url 'tweets:like' tweet.id %}" value="いいね" type="button" onclick="set_or_unset_like_tweet(event)" style="visibility:visible;">
-              {% else %}
-                <input id="like_button{{tweet.id}}" data-tweet-id={{tweet.id}} data-is-liked="false" data-tweet-url="{% url 'tweets:like' tweet.id %}" value="いいね" type="button" onclick="set_or_unset_like_tweet(event)" style="visibility:hidden;">
-              {% endif %}
-            </td>
-            <td>
-              {% if tweet in liked_tweets %}
-                <input id="unlike_button{{tweet.id}}" data-tweet-id={{tweet.id}} data-is-liked="true" data-tweet-url="{% url 'tweets:unlike' tweet.id %}" value="いいね取消" type="button" onclick="set_or_unset_like_tweet(event)" style="visibility:visible;">
-              {% else %}
-                <input id="unlike_button{{tweet.id}}" data-tweet-id={{tweet.id}} data-is-liked="true" data-tweet-url="{% url 'tweets:unlike' tweet.id %}" value="いいね取消" type="button" onclick="set_or_unset_like_tweet(event)" style="visibility:hidden;">
-              {% endif %}
-            </td>
-            <td>
-              {% if tweet.user == request.user %}
-                <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
+              {% if tweets.user == request.user %}
+                <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
                   {% csrf_token %}
                   <button type="submit">削除</button>
                 </form>
