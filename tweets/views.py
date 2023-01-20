@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import TemplateView, View
 
@@ -58,4 +59,4 @@ class TweetDeleteView(LoginRequiredMixin, View):
         if tweet.user != request.user:
             return HttpResponseForbidden()
         tweet.delete()
-        return redirect("welcome:home")
+        return redirect("tweets:home")
