@@ -1,11 +1,36 @@
 {% extends 'base.html' %}
-{% block title %}プロフィール{% endblock %}
-{% block h1 %}プロフィール{% endblock %}
+{% block title %} {{ requested_username }}のプロフィール{% endblock %}
+{% block h1 %}{{ requested_username }}のプロフィール{% endblock %}
 
 {% block content %}
 <div class="container">
     <h1 class="my-5"></h1>
-    <p>{{ user.username }}さん、こんにちは。</p>
+    <p>{{ requested_username }}さん</p>
     <a href="{% url 'accounts:logout' %}">ログアウト</a>
 </div>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>内容</th>
+        <th>作成日</th>
+        <th>ユーザー</th>
+        <th>削除</th>
+    </tr>
+    {% for tweet in user_tweets %}
+        <tr>
+        <td>{{ tweet.id }}</td>
+        <td><a href={% url 'tweets:detail' tweet.pk %}>{{ tweet.content }}</a></td>
+        <td>{{ tweet.created_at }}</td>
+        <td>{{ tweet.user }}</td>
+        <td>
+            {% if tweet.user == request.user %}
+            <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">削除</button>
+            </form>
+            {% endif %}
+        </td>
+        </tr>
+    {% endfor %}
+</table>
 {% endblock %}

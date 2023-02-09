@@ -43,7 +43,9 @@ class UserProfileView(LoginRequiredMixin, DetailView):
     def get(self, request, *args, **kwargs):
         requested_user = get_object_or_404(User, username=kwargs.get("username"))
         requested_username = requested_user.get_username()
+        user_tweets = Tweet.objects.filter(user=requested_user)
         context = {
+            "user_tweets": user_tweets,
             "requested_username": requested_username,
         }
         return render(request, "accounts/profile.html", context)

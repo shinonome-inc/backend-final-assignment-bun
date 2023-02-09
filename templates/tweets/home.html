@@ -31,7 +31,7 @@ HOME
             <td>{{ tweets.id }}</td>
             <td><a href={% url 'tweets:detail' tweets.id %}>{{ tweets.content }}</a></td>
             <td>{{ tweets.created_at }}</td>
-            <td><a href={% url 'tweets:detail' tweets.id %}>{{ tweets.user }}</td>
+            <td><a href={% url 'accounts:user_profile' tweets.user %}>{{ tweets.user }}</td>
             <td>
               {% if tweets.user == request.user %}
                 <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
