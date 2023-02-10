@@ -10,7 +10,7 @@ class Tweet(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.content} ::: id is {str(Tweet.pk)}"
+        return f"{self.user.username} : {self.content}"
 
     class Meta:
         verbose_name_plural = "ツイート"

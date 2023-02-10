@@ -9,7 +9,6 @@ User = get_user_model()
 
 class TestTweetCreateView(TestCase):
     def setUp(self):
-        self.signup_url = reverse("accounts:signup")
         self.create_url = reverse("tweets:create")
         self.home_url = reverse("tweets:home")
         self.user = User.objects.create_user(
