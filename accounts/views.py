@@ -2,12 +2,15 @@ from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView
 
+from tweets.models import Tweet
+
 from .forms import SignUpForm
+
+from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
@@ -37,11 +40,13 @@ class LogoutView(LoginRequiredMixin, auth_views.LogoutView):
     pass
 
 
-class UserProfileView(LoginRequiredMixin, DetailView):
-    def get(self, request, *args, **kwargs):
-        requested_user = get_object_or_404(User, username=kwargs.get("username"))
-        requested_username = requested_user.get_username()
-        context = {
-            "requested_username": requested_username,
-        }
-        return render(request, "accounts/profile.html", context)
+@login_required
+def user_profile_view(request, username):
+    requested_user = get_object_or_404(User, username=username)
+    requested_username = requested_user.get_username()
+    user_tweets = Tweet.objects.select_related("user").filter(user=requested_user)
+    context = {
+        "user_tweets": user_tweets,
+        "requested_username": requested_username,
+    }
+    return render(request, "accounts/profile.html", context)
