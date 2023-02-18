@@ -6,49 +6,49 @@ HOME
 {% endblock title %}
 
 {% block content %}
-  <h1>Backend Final Assignment</h1>
-    {% if request.user.is_authenticated %}
-    <h2>
-      {{ request.user.username }}
-    </h2>
-    <div>
-      <a href="{% url 'accounts:logout' %}"><button>logout</button></a>
-    </div>
-    <div>
-      <a href="{% url 'tweets:create' %}"><button>Tweet!</button></a>
-    </div>
-    <div>
-      <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>内容</th>
-            <th>作成日</th>
-            <th>ユーザー</th>
-            <th>削除</th>
-        </tr>
-        {% for tweets in tweets %}
-          <tr>
-            <td>{{ tweets.id }}</td>
-            <td><a href={% url 'tweets:detail' tweets.id %}>{{ tweets.content }}</a></td>
-            <td>{{ tweets.created_at }}</td>
-            <td><a href={% url 'accounts:user_profile' tweets.user %}>{{ tweets.user }}</td>
-            <td>
-              {% if tweets.user == request.user %}
-                <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
-                  {% csrf_token %}
-                  <button type="submit">削除</button>
-                </form>
-              {% endif %}
-            </td>
-          </tr>
-        {% endfor %}
-      </table>
-    </div>
-    {% else %}
-    現在ログインしていません
-    <div>
-      <a href="{% url 'accounts:signup' %}"><button>SignUp</button></a>
-      <a href="{% url 'accounts:login' %}"><button>login</button></a>
-    </div>
-    {% endif %}
+<h1>Backend Final Assignment</h1>
+{% if request.user.is_authenticated %}
+<h2>
+  {{ request.user.username }}
+</h2>
+<div>
+  <a href="{% url 'accounts:logout' %}"><button>logout</button></a>
+</div>
+<div>
+  <a href="{% url 'tweets:create' %}"><button>Tweet!</button></a>
+</div>
+<div>
+  <table border="1">
+    <tr>
+      <th>ID</th>
+      <th>内容</th>
+      <th>作成日</th>
+      <th>ユーザー</th>
+      <th>削除</th>
+    </tr>
+    {% for tweets in tweets %}
+    <tr>
+      <td>{{ tweets.id }}</td>
+      <td><a href={% url 'tweets:detail' tweets.id %}>{{ tweets.content }}</a></td>
+      <td>{{ tweets.created_at }}</td>
+      <td><a href={% url 'accounts:user_profile' tweets.user %}>{{ tweets.user }}</td>
+      <td>
+        {% if tweets.user == request.user %}
+        <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit">削除</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% else %}
+現在ログインしていません
+<div>
+  <a href="{% url 'accounts:signup' %}"><button>SignUp</button></a>
+  <a href="{% url 'accounts:login' %}"><button>login</button></a>
+</div>
+{% endif %}
 {% endblock content %}

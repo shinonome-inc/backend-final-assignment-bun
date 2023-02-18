@@ -4,33 +4,33 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="my-5"></h1>
-    <p>{{ requested_username }}さん</p>
-    <a href="{% url 'accounts:logout' %}">ログアウト</a>
+  <h1 class="my-5"></h1>
+  <p>{{ requested_username }}さん</p>
+  <a href="{% url 'accounts:logout' %}">ログアウト</a>
 </div>
 <table border="1">
-    <tr>
-        <th>ID</th>
-        <th>内容</th>
-        <th>作成日</th>
-        <th>ユーザー</th>
-        <th>削除</th>
-    </tr>
-    {% for tweets in user_tweets %}
-        <tr>
-        <td>{{ tweets.id }}</td>
-        <td><a href={% url 'tweets:detail' tweets.pk %}>{{ tweets.content }}</a></td>
-        <td>{{ tweets.created_at }}</td>
-        <td>{{ tweets.user }}</td>
-        <td>
-            {% if tweets.user == request.user %}
-            <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
-                {% csrf_token %}
-                <button type="submit">削除</button>
-            </form>
-            {% endif %}
-        </td>
-        </tr>
-    {% endfor %}
+  <tr>
+    <th>ID</th>
+    <th>内容</th>
+    <th>作成日</th>
+    <th>ユーザー</th>
+    <th>削除</th>
+  </tr>
+  {% for tweets in user_tweets %}
+  <tr>
+    <td>{{ tweets.id }}</td>
+    <td><a href={% url 'tweets:detail' tweets.id %}>{{ tweets.content }}</a></td>
+    <td>{{ tweets.created_at }}</td>
+    <td>{{ tweets.user }}</td>
+    <td>
+      {% if tweets.user == request.user %}
+      <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit">削除</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
 </table>
 {% endblock %}
