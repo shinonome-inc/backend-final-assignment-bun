@@ -50,3 +50,19 @@ def user_profile_view(request, username):
         "requested_username": requested_username,
     }
     return render(request, "accounts/profile.html", context)
+
+
+class FollowingListView(auth_views.LogoutView):
+    pass
+
+
+class FollowerListView(auth_views.LogoutView):
+    pass
+
+
+class FollowView(auth_views.LogoutView):
+    pass
+
+
+class UnFollowView(auth_views.LogoutView):
+    pass
