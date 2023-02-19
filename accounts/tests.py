@@ -54,7 +54,6 @@ class TestSignUpView(TestCase):
             SESSION_KEY, self.client.session
         )  # sessionを使うならsetting.pyを書き換え,AinBの確認。
 
-    # 以降ちゃんとエラーでてくれるかtest
     def test_failure_post_with_empty_form(self):
         data = {
             "username": "",
@@ -62,17 +61,6 @@ class TestSignUpView(TestCase):
             "password1": "",
             "password2": "",
         }
-        #        response.context["form"]でhtml等の情報がすべて入る
-        #        print("failure_post_with_empty_form:", form.errors, "\n")
-        #        こんなかんじでデバッグ
-
-        #        self.assertEqual(response.status_code, 200)
-        #        self.assertFalse(User.objects.exists())
-        #        self.assertFalse(form.is_valid())
-        #        self.assertEqual(form.errors["email"], ["このフィールドは必須です。"])
-        #        self.assertEqual(form.errors["username"], ["このフィールドは必須です。"])
-        #        self.assertEqual(form.errors["password1"], ["このフィールドは必須です。"])
-        #        self.assertEqual(form.errors["password2"], ["このフィールドは必須です。"])
         expected_errs = {
             "username": "このフィールドは必須です。",
             "email": "このフィールドは必須です。",
@@ -300,7 +288,14 @@ class TestLogoutView(TestCase):
 
 class TestUserProfileView(TestCase):
     def test_success_get(self):
-        pass
+        self.user = User.objects.create_user(
+            username="test", password="testpasscd", email="hoge@email.com"
+        )
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("accounts:profile", kwargs={"username": self.user.username})
+        )
+        self.assertEqual(response.status_code, 200)
 
 
 class TestUserProfileEditView(TestCase):
