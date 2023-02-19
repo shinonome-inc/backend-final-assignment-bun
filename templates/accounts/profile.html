@@ -6,6 +6,23 @@
 <div class="container">
   <h1 class="my-5"></h1>
   <p>{{ requested_username }}さん</p>
+  {% if username != request.user.username %}
+  {% if isfollowing %}
+  <form style="display:inline"
+        action="{% url 'accounts:unfollow' username %}"
+        method="POST">
+      {% csrf_token %}
+      <button type="submit">フォロー解除</button>
+  </form>
+  {% else %}
+  <form style="display:inline"
+        action="{% url 'accounts:follow' username %}"
+        method="POST">
+      {% csrf_token %}
+      <button type="submit">フォロー</button>
+  </form>
+  {% endif %}
+  {% endif %}
   <a href="{% url 'accounts:logout' %}">ログアウト</a>
 </div>
 <table border="1">

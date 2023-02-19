@@ -1,16 +1,16 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView
+from django.views.generic import CreateView, DetailView, ListView, RedirectView
 
 from tweets.models import Tweet
 
 from .forms import SignUpForm
-
-from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
@@ -40,29 +40,113 @@ class LogoutView(LoginRequiredMixin, auth_views.LogoutView):
     pass
 
 
-@login_required
-def user_profile_view(request, username):
-    requested_user = get_object_or_404(User, username=username)
-    requested_username = requested_user.get_username()
-    user_tweets = Tweet.objects.select_related("user").filter(user=requested_user)
-    context = {
-        "user_tweets": user_tweets,
-        "requested_username": requested_username,
-    }
-    return render(request, "accounts/profile.html", context)
+class UserProfileView(LoginRequiredMixin, ListView):
+    template_name = "accounts/profile.html"
+    model = Tweet
+    queryset = Tweet.objects.select_related("user")
+
+    def get_queryset(self, **kwargs):
+        username = self.kwargs.get("username")
+        queryset = (
+            self.queryset.filter(
+                user__username=username,
+            ).order_by("-created_at")
+            #            .annotate(      #annotateがなんなのか調べておく
+            #                like_counts=Count("liked_by"),
+            #                is_liked=Exists(
+            #                    Tweet.objects.filter(
+            #                        pk=OuterRef("pk"),
+            #                        liked_by=self.request.user,
+            #                    ),
+            #                ),
+            #            )
+        )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = get_object_or_404(User, username=self.kwargs["username"])
+        context["username"] = user.username
+        context["followings_count"] = user.following.count()
+        context["followers_count"] = User.objects.filter(
+            following=user,
+        ).count()
+        context["isfollowing"] = self.request.user.following.filter(
+            username=user.username,
+        ).exists()
+        return context
 
 
-class FollowingListView(auth_views.LogoutView):
-    pass
+# @login_required
+# def user_profile_view(request, username):
+#    requested_user = get_object_or_404(User, username=username)
+#    requested_username = requested_user.get_username()
+#    user_tweets = Tweet.objects.select_related("user").filter(user=requested_user)
+#    follower_count =
+#    context = {
+#        "user_tweets": user_tweets,
+#        "requested_username": requested_username,
+#    }
+#    return render(request, "accounts/profile.html", context)
 
 
-class FollowerListView(auth_views.LogoutView):
-    pass
+# コピペ元amaさん
+class FollowingListView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = "accounts/following.html"
+
+    # デフォルトでは単にモデルのオブジェクトを並べるだけ
+    def get_queryset(self, **kwargs):
+        user = get_object_or_404(
+            User.objects.prefetch_related("following"),
+            username=self.kwargs.get("username"),
+        )
+        return user.following.all()
+
+    def get_context_deta(self, **kwargs):
+        context = super().get_context_deta(**kwargs)
+        context["username"] = self.kwargs["username"]
+        return context
 
 
-class FollowView(auth_views.LogoutView):
-    pass
+class FollowerListView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = "accounts/follower.html"
+
+    def get_queryset(self, **kwargs):
+        user = get_object_or_404(
+            User.objects.prefetch_related("follower"),
+            username=self.kwargs.get("username"),
+        )
+        return user.follower.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["username"] = self.kwargs["username"]
+        return context
 
 
-class UnFollowView(auth_views.LogoutView):
-    pass
+class FollowView(LoginRequiredMixin, RedirectView):
+    url = reverse_lazy("tweets:home")
+
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        if self.kwargs["username"] == request.user.username:
+            return HttpResponse("自分自身をフォローすることはできません。")
+        target_user = get_object_or_404(User, username=self.kwargs["username"])
+        request.user.following.add(target_user)
+        return super().get(request, *args, **kwargs)
+
+
+class UnFollowView(LoginRequiredMixin, RedirectView):
+    url = reverse_lazy("tweets:home")
+
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        if self.kwargs["username"] == request.user.username:
+            return HttpResponse("自分自身にリクエストできません。")
+        target_user = get_object_or_404(User, username=self.kwargs["username"])
+        request.user.following.remove(target_user)
+        return super().get(request, *args, **kwargs)

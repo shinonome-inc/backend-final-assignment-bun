@@ -295,7 +295,7 @@ class TestUserProfileView(TestCase):
         )
         self.client.force_login(self.user)
         response = self.client.get(
-            reverse("accounts:profile", kwargs={"username": self.user.username})
+            reverse("accounts:user_profile", kwargs={"username": self.user.username})
         )
         self.assertEqual(response.status_code, 200)
 
@@ -352,13 +352,13 @@ class TestFollowView(TestCase):
             ),
         )
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(self.user.following.count, 0)
+        self.assertEqual(self.user.following.count(), 0)
 
     def test_failure_post_with_self(self):
         response = self.client.post(
             reverse(
                 "accounts:follow",
-                kwargs={"username": self.user.uesrname},
+                kwargs={"username": self.user.username},
             ),
         )
         self.assertEqual(response.status_code, 200)
@@ -430,7 +430,7 @@ class TestFollowingListView(TestCase):
     def test_success_get(self):
         res = self.client.get(
             reverse(
-                "accounts:following",
+                "accounts:following_list",
                 kwargs={"username": self.user.username},
             )
         )
@@ -449,7 +449,7 @@ class TestFollowerListView(TestCase):
     def test_success_get(self):
         res = self.client.get(
             reverse(
-                "accounts:follower",
+                "accounts:follower_list",
                 kwargs={"username": self.user.username},
             )
         )
