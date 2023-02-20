@@ -7,6 +7,8 @@
   <h1 class="my-5"></h1>
   <p>{{ username }}さん</p>
   <a href="{% url 'tweets:home' %}">ホーム</a>
+  <a href="{% url 'accounts:following_list' username %}">following</a>
+  <a href="{% url 'accounts:follower_list' username %}">follower</a>
   {% if username != request.user.username %}
   {% if isfollowing %}
   <form style="display:inline"
@@ -43,6 +45,7 @@
       <td>{{ tweets.created_at }}</td>
       <td><a href={% url 'accounts:user_profile' tweets.user %}>{{ tweets.user }}</td>
 	  <td>
+          {{ tweets.like_counts }}
 		  {% if tweets.is_liked %}
 		  <form method="post" action="{% url 'tweets:unlike' tweets.id %}">
 			  {% csrf_token %}

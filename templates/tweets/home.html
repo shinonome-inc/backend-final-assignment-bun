@@ -34,6 +34,7 @@ HOME
       <td>{{ tweets.created_at }}</td>
       <td><a href={% url 'accounts:user_profile' tweets.user %}>{{ tweets.user }}</td>
 	  <td>
+          {{ tweets.like_counts }}
 		  {% if tweets.is_liked %}
 		  <form method="post" action="{% url 'tweets:unlike' tweets.id %}">
 			  {% csrf_token %}
