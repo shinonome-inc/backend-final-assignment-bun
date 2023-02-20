@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import View, ListView
+from django.views.generic import View, ListView, DetailView
 from django.db.models import Count, Exists, OuterRef
 
 from tweets.forms import TweetCreateForm
@@ -28,6 +28,7 @@ class HomeView(LoginRequiredMixin, ListView):
             )
         )
 
+
 class TweetCreateView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         form = TweetCreateForm()
@@ -42,22 +43,18 @@ class TweetCreateView(LoginRequiredMixin, View):
         return render(request, "tweets/create.html", {"form": form})
 
 
-class TweetDetailView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        tweet = get_object_or_404(
-            Tweet,
-            pk=kwargs.get("pk"),
-        )
-        is_tweet_user = tweet.user == request.user
-        context = {
-            "tweet": tweet,
-            "is_tweet_user": is_tweet_user,
-        }
-        return render(
-            request,
-            "tweets/detail.html",
-            context,
-        )
+class TweetDetailView(LoginRequiredMixin, DetailView):
+    template_name = "tweets/detail.html"
+    model = Tweet
+    queryset = Tweet.objects.select_related("user")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["like_counts"] = self.object.liked_by.count()
+        context["is_liked"] = self.object.liked_by.filter(
+            pk=self.request.user.pk,
+        ).exists()
+        return context
 
 
 class TweetDeleteView(LoginRequiredMixin, View):
@@ -76,7 +73,7 @@ class LikeView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
         tweet.liked_by.add(request.user)
-        previous_url = request.META.get('HTTP_REFERER')
+        previous_url = request.META.get("HTTP_REFERER")
         return redirect(previous_url)
 
 
@@ -84,5 +81,5 @@ class UnlikeView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
         tweet.liked_by.remove(request.user)
-        previous_url = request.META.get('HTTP_REFERER')
+        previous_url = request.META.get("HTTP_REFERER")
         return redirect(previous_url)

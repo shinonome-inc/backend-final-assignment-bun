@@ -10,13 +10,30 @@
             <th>ID</th>
             <th>内容</th>
             <th>作成日</th>
-            {% if is_tweet_user %}
+            <th>いいね</th>
+            {% if object.user.username == request.user %}
             <th>削除</th>
             {% endif %}
         </tr>
         <tr>
             <td>{{tweet.pk}}</td>
             <td>{{tweet.content}}</td>
+            <td>
+                {{ object.like_counts }}
+                {% if object.is_liked %}
+                <form method="post" action="{% url 'tweets:unlike' object.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        Unlike
+                        {% else %}
+                        <form method="post" action="{% url 'tweets:like' object.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                Like
+                                {% endif %}
+                            </button>
+                        </form>
+            </td>
             <td>{{tweet.created_at}}</td>
             {% if is_tweet_user %}
             <td><a href={% url 'tweets:delete' tweet.pk %}>削除</a></td>
