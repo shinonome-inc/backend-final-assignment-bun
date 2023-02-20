@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, RedirectView
+from django.db.models import Count, Exists, OuterRef
 
 from tweets.models import Tweet
 
@@ -51,15 +52,15 @@ class UserProfileView(LoginRequiredMixin, ListView):
             self.queryset.filter(
                 user__username=username,
             ).order_by("-created_at")
-            #            .annotate(      #annotateがなんなのか調べておく
-            #                like_counts=Count("liked_by"),
-            #                is_liked=Exists(
-            #                    Tweet.objects.filter(
-            #                        pk=OuterRef("pk"),
-            #                        liked_by=self.request.user,
-            #                    ),
-            #                ),
-            #            )
+            .annotate(
+                like_counts=Count("liked_by"),
+                is_liked=Exists(
+                    Tweet.objects.filter(
+                        pk=OuterRef("pk"),
+                        liked_by=self.request.user,
+                    ),
+                ),
+            )
         )
         return queryset
 

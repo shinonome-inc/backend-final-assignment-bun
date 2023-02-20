@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
-{% block title %} {{ requested_username }}のプロフィール{% endblock %}
-{% block h1 %}{{ requested_username }}のプロフィール{% endblock %}
+{% block title %} {{ username }}のプロフィール{% endblock %}
+{% block h1 %}{{ username }}のプロフィール{% endblock %}
 
 {% block content %}
 <div class="container">
   <h1 class="my-5"></h1>
-  <p>{{ requested_username }}さん</p>
+  <p>{{ username }}さん</p>
+  <a href="{% url 'tweets:home' %}">ホーム</a>
   {% if username != request.user.username %}
   {% if isfollowing %}
   <form style="display:inline"
@@ -25,29 +26,48 @@
   {% endif %}
   <a href="{% url 'accounts:logout' %}">ログアウト</a>
 </div>
-<table border="1">
-  <tr>
-    <th>ID</th>
-    <th>内容</th>
-    <th>作成日</th>
-    <th>ユーザー</th>
-    <th>削除</th>
-  </tr>
-  {% for tweet in user_tweets %}
-  <tr>
-    <td>{{ tweet.id }}</td>
-    <td><a href={% url 'tweets:detail' tweet.id %}>{{ tweet.content }}</a></td>
-    <td>{{ tweet.created_at }}</td>
-    <td>{{ tweet.user }}</td>
-    <td>
-      {% if tweet.user == request.user %}
-      <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
-        {% csrf_token %}
-        <button type="submit">削除</button>
-      </form>
-      {% endif %}
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+<div>
+  <table border="1">
+    <tr>
+      <th>ID</th>
+      <th>内容</th>
+      <th>作成日</th>
+      <th>ユーザー</th>
+      <th>いいね</th>
+      <th>削除</th>
+    </tr>
+    {% for tweets in object_list %}
+    <tr>
+      <td>{{ tweets.id }}</td>
+      <td><a href={% url 'tweets:detail' tweets.id %}>{{ tweets.content }}</a></td>
+      <td>{{ tweets.created_at }}</td>
+      <td><a href={% url 'accounts:user_profile' tweets.user %}>{{ tweets.user }}</td>
+	  <td>
+		  {% if tweets.is_liked %}
+		  <form method="post" action="{% url 'tweets:unlike' tweets.id %}">
+			  {% csrf_token %}
+			  <button type="submit" class="btn btn-primary">
+				  Unlike
+				  {% else %}
+				  <form method="post" action="{% url 'tweets:like' tweets.id %}">
+					  {% csrf_token %}
+					  <button type="submit" class="btn btn-primary">
+						  Like
+						  {% endif %}
+					  </button>
+				  </form>
+	  </td>
+	  <td>
+        {% if tweets.user == request.user %}
+        <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit">削除</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
 {% endblock %}
