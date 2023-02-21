@@ -36,7 +36,9 @@
       <th>作成日</th>
       <th>ユーザー</th>
       <th>いいね</th>
+      {% if object_list.user == request.user %}
       <th>削除</th>
+      {% endif %}
     </tr>
     {% for tweets in object_list %}
     <tr>
@@ -59,15 +61,15 @@
 						  {% endif %}
 					  </button>
 				  </form>
-	  </td>
-	  <td>
-        {% if tweets.user == request.user %}
-        <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
-          {% csrf_token %}
-          <button type="submit">削除</button>
-        </form>
-        {% endif %}
-      </td>
+    </td>
+    {% if tweets.user == request.user %}
+    <td>
+      <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit">削除</button>
+      </form>
+    </td>
+    {% endif %}
     </tr>
     {% endfor %}
   </table>
