@@ -1,3 +1,4 @@
+import random
 from django.contrib.auth import SESSION_KEY, get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -287,19 +288,50 @@ class TestLogoutView(TestCase):
 
 
 class TestUserProfileView(TestCase):
-    def test_success_get(self):
+    def setUp(self):
+        # 10人以下のランダムな数新しいuserを追加する
         self.user = User.objects.create_user(
             username="test",
             password="testpasscd",
             email="hoge@email.com",
         )
         self.client.force_login(self.user)
+        self.followees = []
+        for i in range(random.randint(1, 10)):
+            followee = User.objects.create_user(
+                username=f"followee{i}",
+                password=f"followeepass{i}",
+                email=f"followee{i}@email.com",
+            )
+        self.followees.append(followee)
+
+        for followee in self.followees:
+            self.user.following(followee)
+
+    def test_success_get(self):
         response = self.client.get(
             reverse("accounts:user_profile", kwargs={"username": self.user.username})
         )
+        # context内に含まれるフォロー数とフォロワー数がDBに保存されている該当のユーザーのフォロー数とフォロワー数に同一であることを確認する
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["following_count"], len(self.followees))
+        self.assertEqual(response.context["follower_count"], 0)
 
 
+# class TestUserProfileView(TestCase):
+#    def test_success_get(self):
+#        self.user = User.objects.create_user(
+#            username="test",
+#            password="testpasscd",
+#            email="hoge@email.com",
+#        )
+#        self.client.force_login(self.user)
+#        response = self.client.get(
+#            reverse("accounts:user_profile", kwargs={"username": self.user.username})
+#        )
+#        self.assertEqual(response.status_code, 200)
+#
+#
 # class TestUserProfileEditView(TestCase):
 #    def test_success_get(self):
 #        pass
