@@ -48,9 +48,10 @@ class UserProfileView(LoginRequiredMixin, ListView):
 
     def get_queryset(self, **kwargs):
         username = self.kwargs.get("username")
+        user = get_object_or_404(User, username=username) # Userオブジェクトを取得
         queryset = (
             self.queryset.filter(
-                user__username=username,
+                user=user # Userオブジェクトでフィルター
             ).order_by("-created_at")
             .annotate(
                 like_counts=Count("liked_by"),
@@ -76,6 +77,41 @@ class UserProfileView(LoginRequiredMixin, ListView):
             username=user.username,
         ).exists()
         return context
+#class UserProfileView(LoginRequiredMixin, ListView):
+#    template_name = "accounts/profile.html"
+#    model = Tweet
+#    queryset = Tweet.objects.select_related("user")
+#
+#    def get_queryset(self, **kwargs):
+#        username = self.kwargs.get("username")
+#        queryset = (
+#            self.queryset.filter(
+#                user__username=username,
+#            ).order_by("-created_at")
+#            .annotate(
+#                like_counts=Count("liked_by"),
+#                is_liked=Exists(
+#                    Tweet.objects.filter(
+#                        pk=OuterRef("pk"),
+#                        liked_by=self.request.user,
+#                    ),
+#                ),
+#            )
+#        )
+#        return queryset
+#
+#    def get_context_data(self, **kwargs):
+#        context = super().get_context_data(**kwargs)
+#        user = get_object_or_404(User, username=self.kwargs["username"])
+#        context["username"] = user.username
+#        context["followings_count"] = user.following.count()
+#        context["followers_count"] = User.objects.filter(
+#            following=user,
+#        ).count()
+#        context["isfollowing"] = self.request.user.following.filter(
+#            username=user.username,
+#        ).exists()
+#        return context
 
 
 # @login_required
