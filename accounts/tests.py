@@ -297,7 +297,7 @@ class TestUserProfileView(TestCase):
         )
         self.client.force_login(self.user)
         self.followees = []
-        for i in range(random.randint(1, 10)):
+        for i in range(random.randint(3, 10)):
             followee = User.objects.create_user(
                 username=f"followee{i}",
                 password=f"followeepass{i}",
@@ -306,7 +306,7 @@ class TestUserProfileView(TestCase):
         self.followees.append(followee)
 
         for followee in self.followees:
-            self.user.following(followee)
+            self.user.following.add(followee)
 
     def test_success_get(self):
         response = self.client.get(
@@ -314,8 +314,8 @@ class TestUserProfileView(TestCase):
         )
         # context内に含まれるフォロー数とフォロワー数がDBに保存されている該当のユーザーのフォロー数とフォロワー数に同一であることを確認する
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["following_count"], len(self.followees))
-        self.assertEqual(response.context["follower_count"], 0)
+        self.assertEqual(response.context["followings_count"], len(self.followees))
+        self.assertEqual(response.context["followers_count"], 0)
 
 
 # class TestUserProfileView(TestCase):
