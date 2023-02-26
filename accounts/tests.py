@@ -393,7 +393,7 @@ class TestFollowView(TestCase):
                 kwargs={"username": self.user.username},
             ),
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
         self.assertContains(response, "自分自身をフォローすることはできません。")
         self.assertEqual(self.user.following.count(), 0)
 
@@ -445,7 +445,7 @@ class TestUnfollowView(TestCase):
                 kwargs={"username": self.user.username},
             ),
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 400)
         self.assertContains(res, "自分自身にリクエストできません。")
         self.assertEqual(self.user.following.count(), 1)
 

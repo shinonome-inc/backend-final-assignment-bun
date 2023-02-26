@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, RedirectView
@@ -170,10 +170,10 @@ class FollowView(LoginRequiredMixin, RedirectView):
 
     def post(self, request, *args, **kwargs):
         if self.kwargs["username"] == request.user.username:
-            return HttpResponse("自分自身をフォローすることはできません。")
+            return HttpResponseBadRequest("自分自身をフォローすることはできません。")
         target_user = get_object_or_404(User, username=self.kwargs["username"])
         request.user.following.add(target_user)
-        return super().get(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
 
 class UnFollowView(LoginRequiredMixin, RedirectView):
@@ -183,7 +183,7 @@ class UnFollowView(LoginRequiredMixin, RedirectView):
 
     def post(self, request, *args, **kwargs):
         if self.kwargs["username"] == request.user.username:
-            return HttpResponse("自分自身にリクエストできません。")
+            return HttpResponseBadRequest("自分自身にリクエストできません。")
         target_user = get_object_or_404(User, username=self.kwargs["username"])
         request.user.following.remove(target_user)
-        return super().get(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
