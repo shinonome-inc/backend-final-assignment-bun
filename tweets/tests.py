@@ -159,10 +159,16 @@ class TestUnlikeView(TestCase):
         self.tweet.liked_by.add(self.user)
 
     def test_success_post(self):
-        res = self.client.post(
-            reverse("tweets:unlike", kwargs={"pk": self.tweet.pk}),
+        print(reverse("tweets:unlike", kwargs={"pk": self.tweet.pk}))
+        print(self.tweet.pk)
+        response = self.client.post(
+            reverse(
+                "tweets:unlike",
+                kwargs={"pk": self.tweet.pk},
+            ),
+            follow=True
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(self.tweet.liked_by.count(), 0)
 
     def test_failure_post_with_not_exist_tweet(self):
