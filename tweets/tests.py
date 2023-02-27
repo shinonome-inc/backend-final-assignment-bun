@@ -159,6 +159,8 @@ class TestUnlikeView(TestCase):
         self.tweet.liked_by.add(self.user)
 
     def test_success_post(self):
+        print(reverse("tweets:unlike", kwargs={"pk": self.tweet.pk}))
+        print(self.tweet.pk)
         response = self.client.post(
             reverse(
                 "tweets:unlike",
