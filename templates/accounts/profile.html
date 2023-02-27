@@ -35,7 +35,6 @@
       <th>内容</th>
       <th>作成日</th>
       <th>ユーザー</th>
-      <th>いいね</th>
       {% if object_list.user == request.user %}
       <th>削除</th>
       {% endif %}
@@ -46,22 +45,6 @@
       <td><a href={% url 'tweets:detail' tweets.id %}>{{ tweets.content }}</a></td>
       <td>{{ tweets.created_at }}</td>
       <td><a href={% url 'accounts:user_profile' tweets.user %}>{{ tweets.user }}</td>
-	  <td>
-          {{ tweets.like_counts }}
-		  {% if tweets.is_liked %}
-		  <form method="post" action="{% url 'tweets:unlike' tweets.id %}">
-			  {% csrf_token %}
-			  <button type="submit" class="btn btn-primary">
-				  Unlike
-				  {% else %}
-				  <form method="post" action="{% url 'tweets:like' tweets.id %}">
-					  {% csrf_token %}
-					  <button type="submit" class="btn btn-primary">
-						  Like
-						  {% endif %}
-					  </button>
-				  </form>
-    </td>
     {% if tweets.user == request.user %}
     <td>
       <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
