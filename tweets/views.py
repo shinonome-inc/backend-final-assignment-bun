@@ -74,7 +74,7 @@ class LikeView(LoginRequiredMixin, View):
         tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
         tweet.liked_by.add(request.user)
         previous_url = request.META.get("HTTP_REFERER")
-        if previous_url == None:
+        if previous_url is None:
             return HttpResponse("ok")
         return redirect(previous_url)
 
@@ -84,6 +84,6 @@ class UnlikeView(LoginRequiredMixin, View):
         tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
         tweet.liked_by.remove(request.user)
         previous_url = request.META.get("HTTP_REFERER")
-        if previous_url == None:
+        if previous_url is None:
             return HttpResponse("ok")
         return redirect(previous_url)
