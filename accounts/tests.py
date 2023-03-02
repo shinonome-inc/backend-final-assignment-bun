@@ -349,6 +349,7 @@ class TestFollowView(TestCase):
             email="fuga@example.com",
             password="fugapass",
         )
+        self.client.force_login(self.user)
 
     #        self.client.force_login(self.user)
     #
@@ -379,7 +380,6 @@ class TestFollowView(TestCase):
     #        self.assertEqual(self.user.following.count(), 0)
 
     def test_failure_post_with_self(self):
-        self.client.login(username=self.user.username, password=self.user.password)
         response = self.client.post(
             reverse(
                 "accounts:follow",
