@@ -3,11 +3,11 @@ from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.db.models import Count, Exists, OuterRef
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, RedirectView
-from django.db.models import Count, Exists, OuterRef
 
 from tweets.models import Tweet
 
@@ -48,11 +48,10 @@ class UserProfileView(LoginRequiredMixin, ListView):
 
     def get_queryset(self, **kwargs):
         username = self.kwargs.get("username")
-        user = get_object_or_404(User, username=username) # Userオブジェクトを取得
+        user = get_object_or_404(User, username=username)  # Userオブジェクトを取得
         queryset = (
-            self.queryset.filter(
-                user=user # Userオブジェクトでフィルター
-            ).order_by("-created_at")
+            self.queryset.filter(user=user)  # Userオブジェクトでフィルター
+            .order_by("-created_at")
             .annotate(
                 like_counts=Count("liked_by"),
                 is_liked=Exists(
@@ -77,7 +76,9 @@ class UserProfileView(LoginRequiredMixin, ListView):
             username=user.username,
         ).exists()
         return context
-#class UserProfileView(LoginRequiredMixin, ListView):
+
+
+# class UserProfileView(LoginRequiredMixin, ListView):
 #    template_name = "accounts/profile.html"
 #    model = Tweet
 #    queryset = Tweet.objects.select_related("user")

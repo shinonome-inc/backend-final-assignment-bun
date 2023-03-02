@@ -1,4 +1,5 @@
 import random
+
 from django.contrib.auth import SESSION_KEY, get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -39,9 +40,7 @@ class TestSignUpView(TestCase):
             "password2": "goodpass",
         }
         response = self.client.post(self.url, user)
-        self.assertTrue(
-            User.objects.filter(username="test", email="test@example.com").exists()
-        )
+        self.assertTrue(User.objects.filter(username="test", email="test@example.com").exists())
         self.assertRedirects(
             response,
             reverse("tweets:home"),
@@ -51,9 +50,7 @@ class TestSignUpView(TestCase):
             fetch_redirect_response=True,  # 最終ページをロードするか否か
         )
 
-        self.assertIn(
-            SESSION_KEY, self.client.session
-        )  # sessionを使うならsetting.pyを書き換え,AinBの確認。
+        self.assertIn(SESSION_KEY, self.client.session)  # sessionを使うならsetting.pyを書き換え,AinBの確認。
 
     def test_failure_post_with_empty_form(self):
         data = {
@@ -126,9 +123,7 @@ class TestSignUpView(TestCase):
         self.assertEqual(User.objects.count(), 0)
 
     def test_failure_post_with_duplicated_user(self):
-        User.objects.create_user(
-            username="test", email="fuga@email.com", password="passcode0000"
-        )
+        User.objects.create_user(username="test", email="fuga@email.com", password="passcode0000")
         data2 = {
             "username": "test",
             "email": "fuga@email.com",
@@ -276,9 +271,7 @@ class TestLoginView(TestCase):
 
 class TestLogoutView(TestCase):
     def setUp(self):
-        logoutPost = User.objects.create_user(
-            username="hoge", password="pass0000", email="hoge@fuga.com"
-        )
+        logoutPost = User.objects.create_user(username="hoge", password="pass0000", email="hoge@fuga.com")
         self.client.force_login(logoutPost)
 
     def test_success_get(self):
@@ -309,9 +302,7 @@ class TestUserProfileView(TestCase):
             self.user.following.add(followee)
 
     def test_success_get(self):
-        response = self.client.get(
-            reverse("accounts:user_profile", kwargs={"username": self.user.username})
-        )
+        response = self.client.get(reverse("accounts:user_profile", kwargs={"username": self.user.username}))
         # context内に含まれるフォロー数とフォロワー数がDBに保存されている該当のユーザーのフォロー数とフォロワー数に同一であることを確認する
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["followings_count"], len(self.followees))
@@ -358,42 +349,43 @@ class TestFollowView(TestCase):
             email="fuga@example.com",
             password="fugapass",
         )
-#        self.client.force_login(self.user)
-#
-#    def test_success_post(self):
-#        response = self.client.post(
-#            reverse(
-#                "accounts:follow",
-#                kwargs={"username": self.targetuser.username},
-#            ),
-#        )
-#        self.assertRedirects(
-#            response,
-#            reverse("tweets:home"),
-#            status_code=302,
-#            target_status_code=200,
-#        )
-#        self.assertEqual(self.user.following.count(), 1)
-#        self.assertEqual(self.user.following.first(), self.targetuser)
-#
-#    def test_failure_post_with_not_exist_user(self):
-#        response = self.client.post(
-#            reverse(
-#                "accounts:follow",
-#                kwargs={"username": "heman"},
-#            ),
-#        )
-#        self.assertEqual(response.status_code, 404)
-#        self.assertEqual(self.user.following.count(), 0)
+
+    #        self.client.force_login(self.user)
+    #
+    #    def test_success_post(self):
+    #        response = self.client.post(
+    #            reverse(
+    #                "accounts:follow",
+    #                kwargs={"username": self.targetuser.username},
+    #            ),
+    #        )
+    #        self.assertRedirects(
+    #            response,
+    #            reverse("tweets:home"),
+    #            status_code=302,
+    #            target_status_code=200,
+    #        )
+    #        self.assertEqual(self.user.following.count(), 1)
+    #        self.assertEqual(self.user.following.first(), self.targetuser)
+    #
+    #    def test_failure_post_with_not_exist_user(self):
+    #        response = self.client.post(
+    #            reverse(
+    #                "accounts:follow",
+    #                kwargs={"username": "heman"},
+    #            ),
+    #        )
+    #        self.assertEqual(response.status_code, 404)
+    #        self.assertEqual(self.user.following.count(), 0)
 
     def test_failure_post_with_self(self):
-        self.client.login(username=self.user.username,password=self.user.password)
+        self.client.login(username=self.user.username, password=self.user.password)
         response = self.client.post(
             reverse(
                 "accounts:follow",
                 kwargs={"username": self.user.username},
             ),
-            follow=True
+            follow=True,
         )
         self.assertEqual(response.status_code, 400)
         #   form = response.context[""]を使った書き方ができませんでした。一旦提出させていただきます。

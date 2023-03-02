@@ -11,9 +11,7 @@ class TestTweetCreateView(TestCase):
     def setUp(self):
         self.create_url = reverse("tweets:create")
         self.home_url = reverse("tweets:home")
-        self.user = User.objects.create_user(
-            username="test", email="hoge@email.com", password="testpass0000"
-        )
+        self.user = User.objects.create_user(username="test", email="hoge@email.com", password="testpass0000")
         self.client.force_login(self.user)
 
     def test_success_get(self):
@@ -59,9 +57,7 @@ class TestTweetCreateView(TestCase):
 
 class TestTweetDetailView(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="test_user", email="hoge@email.com", password="testpass0000"
-        )
+        self.user = User.objects.create_user(username="test_user", email="hoge@email.com", password="testpass0000")
         self.client.force_login(user=self.user)
         self.tweet = Tweet.objects.create(content="test_tweet", user=self.user)
 
@@ -75,47 +71,35 @@ class TestTweetDetailView(TestCase):
 
 class TestTweetDeleteView(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="test_user", email="hoge@email.com", password="testpass0000"
-        )
+        self.user = User.objects.create_user(username="test_user", email="hoge@email.com", password="testpass0000")
         self.client.force_login(user=self.user)
         self.tweet = Tweet.objects.create(content="test_tweet", user=self.user)
         self.tweet_id = self.tweet.pk
 
     def test_success_post(self):
 
-        response = self.client.post(
-            reverse("tweets:delete", kwargs={"pk": self.tweet_id})
-        )
+        response = self.client.post(reverse("tweets:delete", kwargs={"pk": self.tweet_id}))
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse("tweets:home"), 302, 200)
         self.assertFalse(Tweet.objects.filter(pk=self.tweet_id).exists())
 
     def test_failure_post_with_not_exist_tweet(self):
-        response = self.client.post(
-            reverse("tweets:delete", kwargs={"pk": self.tweet_id + 1})
-        )
+        response = self.client.post(reverse("tweets:delete", kwargs={"pk": self.tweet_id + 1}))
         self.assertEqual(response.status_code, 404)
-        self.assertIn(
-            b"The requested resource was not found on this server.", response.content
-        )
+        self.assertIn(b"The requested resource was not found on this server.", response.content)
 
     def test_failure_post_with_incorrect_user(self):
         incorrect_user = User.objects.create_user(
             username="incorrect_user", email="fuga@email.com", password="testpass0000"
         )
         self.client.force_login(user=incorrect_user)
-        response = self.client.post(
-            reverse("tweets:delete", kwargs={"pk": self.tweet_id})
-        )
+        response = self.client.post(reverse("tweets:delete", kwargs={"pk": self.tweet_id}))
         self.assertEqual(response.status_code, 403)
 
 
 class TestLikeView(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="@0dg8gwO7_0Gw"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="@0dg8gwO7_0Gw")
         self.tweet = Tweet.objects.create(user=self.user, content="Hello, world!")
         self.client.force_login(self.user)
 
@@ -166,7 +150,7 @@ class TestUnlikeView(TestCase):
                 "tweets:unlike",
                 kwargs={"pk": self.tweet.pk},
             ),
-            follow=True
+            follow=True,
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.tweet.liked_by.count(), 0)
