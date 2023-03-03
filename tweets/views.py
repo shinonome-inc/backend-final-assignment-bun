@@ -35,10 +35,6 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
     model = Tweet
     queryset = Tweet.objects.select_related("user")
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
 
 class TweetDeleteView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):

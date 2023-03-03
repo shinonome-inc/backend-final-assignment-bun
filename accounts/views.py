@@ -1,13 +1,11 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Exists, OuterRef
-from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponseBadRequest
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, ListView, RedirectView
+from django.views.generic import CreateView, ListView, RedirectView
 
 from tweets.models import Tweet
 
@@ -62,60 +60,10 @@ class UserProfileView(LoginRequiredMixin, ListView):
         context["followers_count"] = User.objects.filter(
             following=user,
         ).count()
-        context["isfollowing"] = self.request.user.following.filter(
+        context["is_following"] = self.request.user.following.filter(
             username=user.username,
         ).exists()
         return context
-
-
-# class UserProfileView(LoginRequiredMixin, ListView):
-#    template_name = "accounts/profile.html"
-#    model = Tweet
-#    queryset = Tweet.objects.select_related("user")
-#
-#    def get_queryset(self, **kwargs):
-#        username = self.kwargs.get("username")
-#        queryset = (
-#            self.queryset.filter(
-#                user__username=username,
-#            ).order_by("-created_at")
-#            .annotate(
-#                like_counts=Count("liked_by"),
-#                is_liked=Exists(
-#                    Tweet.objects.filter(
-#                        pk=OuterRef("pk"),
-#                        liked_by=self.request.user,
-#                    ),
-#                ),
-#            )
-#        )
-#        return queryset
-#
-#    def get_context_data(self, **kwargs):
-#        context = super().get_context_data(**kwargs)
-#        user = get_object_or_404(User, username=self.kwargs["username"])
-#        context["username"] = user.username
-#        context["followings_count"] = user.following.count()
-#        context["followers_count"] = User.objects.filter(
-#            following=user,
-#        ).count()
-#        context["isfollowing"] = self.request.user.following.filter(
-#            username=user.username,
-#        ).exists()
-#        return context
-
-
-# @login_required
-# def user_profile_view(request, username):
-#    requested_user = get_object_or_404(User, username=username)
-#    requested_username = requested_user.get_username()
-#    user_tweets = Tweet.objects.select_related("user").filter(user=requested_user)
-#    follower_count =
-#    context = {
-#        "user_tweets": user_tweets,
-#        "requested_username": requested_username,
-#    }
-#    return render(request, "accounts/profile.html", context)
 
 
 # コピペ元amaさん
@@ -156,7 +104,6 @@ class FollowerListView(LoginRequiredMixin, ListView):
 
 class FollowView(LoginRequiredMixin, RedirectView):
     url = reverse_lazy("tweets:home")
-
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):

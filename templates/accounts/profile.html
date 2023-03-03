@@ -10,7 +10,7 @@
   <a href="{% url 'accounts:following_list' username %}">{{ followings_count }}</a>
   <a href="{% url 'accounts:follower_list' username %}">{{ followers_count }}</a>
   {% if username != request.user.username %}
-  {% if isfollowing %}
+  {% if is_following %}
   <form style="display:inline"
         action="{% url 'accounts:unfollow' username %}"
         method="POST">
