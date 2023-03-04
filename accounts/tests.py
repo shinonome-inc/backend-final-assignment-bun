@@ -1,7 +1,6 @@
 import random
 
 from django.contrib.auth import SESSION_KEY, get_user_model
-from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
