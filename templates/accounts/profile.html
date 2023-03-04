@@ -40,21 +40,21 @@
       <th>削除</th>
       {% endif %}
     </tr>
-    {% for tweets in object_list %}
+    {% for tweet in object_list %}
     <tr>
-      <td>{{ tweets.id }}</td>
-      <td><a href={% url 'tweets:detail' tweets.id %}>{{ tweets.content }}</a></td>
-      <td>{{ tweets.created_at }}</td>
-      <td><a href={% url 'accounts:user_profile' tweets.user %}>{{ tweets.user }}</td>
+      <td>{{ tweet.id }}</td>
+      <td><a href={% url 'tweets:detail' tweet.id %}>{{ tweet.content }}</a></td>
+      <td>{{ tweet.created_at }}</td>
+      <td><a href={% url 'accounts:user_profile' tweet.user %}>{{ tweet.user }}</td>
 	  <td>
-          {{ tweets.like_counts }}
-		  {% if tweets.is_liked %}
-		  <form method="post" action="{% url 'tweets:unlike' tweets.id %}">
+          {{ tweet.like_counts }}
+		  {% if tweet.is_liked %}
+		  <form method="post" action="{% url 'tweets:unlike' tweet.id %}">
 			  {% csrf_token %}
 			  <button type="submit" class="btn btn-primary">
 				  Unlike
 				  {% else %}
-				  <form method="post" action="{% url 'tweets:like' tweets.id %}">
+				  <form method="post" action="{% url 'tweets:like' tweet.id %}">
 					  {% csrf_token %}
 					  <button type="submit" class="btn btn-primary">
 						  Like
@@ -62,9 +62,9 @@
 					  </button>
 				  </form>
     </td>
-    {% if tweets.user == request.user %}
+    {% if tweet.user == request.user %}
     <td>
-      <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
+      <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
         {% csrf_token %}
         <button type="submit">削除</button>
       </form>

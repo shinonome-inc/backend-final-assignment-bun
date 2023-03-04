@@ -164,7 +164,7 @@ class TestUnlikeView(TestCase):
                 "tweets:unlike",
                 kwargs={"pk": self.tweet.pk},
             ),
-            follow=True
+            follow=True,
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.tweet.liked_by.count(), 0)

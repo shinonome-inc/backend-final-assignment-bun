@@ -11,4 +11,3 @@ class SignUpForm(UserCreationForm):
             "username",
             "email",
         )
-
