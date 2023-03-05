@@ -1,10 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-<<<<<<< HEAD
-from django.db.models import Count, Exists, OuterRef
-from django.http import HttpResponse, HttpResponseForbidden
-=======
 from django.http import HttpResponseForbidden
->>>>>>> 0c823f0fba50aacd3b6c1b6639b8a59ba9be8bd3
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import DetailView, ListView, View
 
@@ -39,13 +34,6 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
     model = Tweet
     queryset = Tweet.objects.select_related("user")
 
-<<<<<<< HEAD
-=======
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
->>>>>>> 0c823f0fba50aacd3b6c1b6639b8a59ba9be8bd3
 
 class TweetDeleteView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
