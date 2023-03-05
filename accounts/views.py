@@ -116,7 +116,6 @@ class FollowView(LoginRequiredMixin, RedirectView):
 
 class UnFollowView(LoginRequiredMixin, RedirectView):
     url = reverse_lazy("tweets:home")
-
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):

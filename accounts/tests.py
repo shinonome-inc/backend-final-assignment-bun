@@ -1,11 +1,11 @@
 import random
 
 from django.contrib.auth import SESSION_KEY, get_user_model
-from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
 from mysite import settings
+from tweets.models import Tweet
 
 User = get_user_model()
 
@@ -290,13 +290,13 @@ class TestLogoutView(TestCase):
 
 class TestUserProfileView(TestCase):
     def setUp(self):
-        # 10人以下のランダムな数新しいuserを追加する
         self.user = User.objects.create_user(
-            username="test",
+            username="hogehogeman",
             password="testpasscd",
             email="hoge@email.com",
         )
         self.client.force_login(self.user)
+        # 10人以下のランダムな数新しいuserを追加する
         self.followees = []
         for i in range(random.randint(3, 10)):
             followee = User.objects.create_user(
@@ -304,10 +304,17 @@ class TestUserProfileView(TestCase):
                 password=f"followeepass{i}",
                 email=f"followee{i}@email.com",
             )
-        self.followees.append(followee)
-
+            self.followees.append(followee)
+        # self.userが全部のアカウントをフォロー
         for followee in self.followees:
             self.user.following.add(followee)
+
+        # self.userが10以下の数ツイート
+        for i in range(random.randint(3, 10)):
+            Tweet.objects.create(
+                user=self.user,
+                content=f"Test tweet {i} from {self.user}",
+            )
 
     def test_success_get(self):
         response = self.client.get(
@@ -317,34 +324,9 @@ class TestUserProfileView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["followings_count"], len(self.followees))
         self.assertEqual(response.context["followers_count"], 0)
-
-
-# class TestUserProfileView(TestCase):
-#    def test_success_get(self):
-#        self.user = User.objects.create_user(
-#            username="test",
-#            password="testpasscd",
-#            email="hoge@email.com",
-#        )
-#        self.client.force_login(self.user)
-#        response = self.client.get(
-#            reverse("accounts:user_profile", kwargs={"username": self.user.username})
-#        )
-#        self.assertEqual(response.status_code, 200)
-#
-#
-# class TestUserProfileEditView(TestCase):
-#    def test_success_get(self):
-#        pass
-#
-#    def test_success_post(self):
-#        pass
-#
-#    def test_failure_post_with_not_exists_user(self):
-#        pass
-#
-#    def test_failure_post_with_incorrect_user(self):
-#        pass
+        # context内に含まれるツイート一覧が、DBに保存されている該当のユーザーのツイート一覧と同一である
+        tweet_list = response.context["tweet_list"]
+        self.assertEqual(len(list(tweet_list)), len(self.user.tweets.all()))
 
 
 class TestFollowView(TestCase):
@@ -395,8 +377,9 @@ class TestFollowView(TestCase):
             ),
         )
         self.assertEqual(response.status_code, 400)
-        #   form = response.context[""]を使った書き方ができませんでした。一旦提出させていただきます。
-        self.assertContains(response, "自分自身をフォローすることはできません。", status_code=400)
+        form = response.content.decode("utf-8")
+        expected_errs = "自分自身をフォローすることはできません。"
+        self.assertEqual(expected_errs, form)
         self.assertEqual(self.user.following.count(), 0)
 
 
@@ -441,26 +424,39 @@ class TestUnfollowView(TestCase):
         self.assertEqual(self.user.following.count(), 1)
 
     def test_failure_post_with_incorrect_user(self):
-        res = self.client.post(
+        response = self.client.post(
             reverse(
                 "accounts:unfollow",
                 kwargs={"username": self.user.username},
             ),
         )
-        self.assertEqual(res.status_code, 400)
-        #   FollowViewと同じくform = response.context[""]を使った書き方ができませんでした。
-        self.assertContains(res, "自分自身にリクエストできません。", status_code=400)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(self.user.following.count(), 1)
+        form = response.content.decode("utf-8")
+        expected_errs = "自分自身にリクエストできません。"
+        self.assertEqual(expected_errs, form)
 
 
 class TestFollowingListView(TestCase):
     def setUp(self):
+        # 10人以下のランダムな数新しいuserを追加する
         self.user = User.objects.create_user(
-            username="testuser",
-            email="test@example.com",
-            password="@0dg8gwO7_0Gw",
+            username="test",
+            password="testpasscd",
+            email="hoge@email.com",
         )
         self.client.force_login(self.user)
+        self.followees = []
+        for i in range(random.randint(3, 10)):
+            followee = User.objects.create_user(
+                username=f"followee{i}",
+                password=f"followeepass{i}",
+                email=f"followee{i}@email.com",
+            )
+            self.followees.append(followee)
+
+        for followee in self.followees:
+            self.user.following.add(followee)
 
     def test_success_get(self):
         res = self.client.get(
@@ -470,16 +466,30 @@ class TestFollowingListView(TestCase):
             )
         )
         self.assertEqual(res.status_code, 200)
+        user_list = res.context["user_list"]
+        self.assertEqual(list(user_list), self.followees)
 
 
 class TestFollowerListView(TestCase):
     def setUp(self):
+        # 10人以下のランダムな数新しいuserを追加する
         self.user = User.objects.create_user(
-            username="testuser",
-            email="test@example.com",
-            password="@0dg8gwO7_0Gw",
+            username="test",
+            password="testpasscd",
+            email="hoge@email.com",
         )
         self.client.force_login(self.user)
+        self.followers = []
+        for i in range(random.randint(3, 10)):
+            follower = User.objects.create_user(
+                username=f"follower{i}",
+                password=f"followerpass{i}",
+                email=f"follower{i}@email.com",
+            )
+            self.followers.append(follower)
+
+        for follower in self.followers:
+            follower.following.add(self.user)
 
     def test_success_get(self):
         res = self.client.get(
@@ -489,3 +499,5 @@ class TestFollowerListView(TestCase):
             )
         )
         self.assertEqual(res.status_code, 200)
+        user_list = res.context["user_list"]
+        self.assertEqual(list(user_list), self.followers)

@@ -39,15 +39,23 @@
       <th>削除</th>
       {% endif %}
     </tr>
-    {% for tweets in object_list %}
+    {% for tweet in object_list %}
     <tr>
+<<<<<<< HEAD
       <td>{{ tweets.id }}</td>
       <td><a href={% url 'tweets:detail' tweets.id %}>{{ tweets.content }}</a></td>
       <td>{{ tweets.created_at }}</td>
       <td><a href={% url 'accounts:user_profile' tweets.user %}>{{ tweets.user }}</td>
     {% if tweets.user == request.user %}
+=======
+      <td>{{ tweet.id }}</td>
+      <td><a href={% url 'tweets:detail' tweet.id %}>{{ tweet.content }}</a></td>
+      <td>{{ tweet.created_at }}</td>
+      <td><a href={% url 'accounts:user_profile' tweet.user %}>{{ tweet.user }}</td>
+    {% if tweet.user == request.user %}
+>>>>>>> 0c823f0fba50aacd3b6c1b6639b8a59ba9be8bd3
     <td>
-      <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
+      <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
         {% csrf_token %}
         <button type="submit">削除</button>
       </form>
