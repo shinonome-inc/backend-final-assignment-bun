@@ -109,25 +109,3 @@ class TestTweetDeleteView(TestCase):
             reverse("tweets:delete", kwargs={"pk": self.tweet_id})
         )
         self.assertEqual(response.status_code, 403)
-
-
-class TestFavoriteView(TestCase):
-    def test_success_post(self):
-        pass
-
-    def test_failure_post_with_not_exist_tweet(self):
-        pass
-
-    def test_failure_post_with_favorited_tweet(self):
-        pass
-
-
-class TestUnfavoriteView(TestCase):
-    def test_success_post(self):
-        pass
-
-    def test_failure_post_with_not_exist_tweet(self):
-        pass
-
-    def test_failure_post_with_unfavorited_tweet(self):
-        pass

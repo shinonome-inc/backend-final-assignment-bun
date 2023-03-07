@@ -1,19 +1,18 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import View
+from django.views.generic import DetailView, ListView, View
 
 from tweets.forms import TweetCreateForm
 from tweets.models import Tweet
 
 
-class HomeView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        tweets = Tweet.objects.select_related("user").all()
-        context = {
-            "tweets": tweets,
-        }
-        return render(request, "tweets/home.html", context)
+class HomeView(LoginRequiredMixin, ListView):
+    template_name = "tweets/home.html"
+    model = Tweet
+
+    def get_queryset(self, **kwargs):
+        return Tweet.objects.select_related("user").order_by("-created_at")
 
 
 class TweetCreateView(LoginRequiredMixin, View):
@@ -30,22 +29,10 @@ class TweetCreateView(LoginRequiredMixin, View):
         return render(request, "tweets/create.html", {"form": form})
 
 
-class TweetDetailView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        tweet = get_object_or_404(
-            Tweet,
-            pk=kwargs.get("pk"),
-        )
-        is_tweet_user = tweet.user == request.user
-        context = {
-            "tweet": tweet,
-            "is_tweet_user": is_tweet_user,
-        }
-        return render(
-            request,
-            "tweets/detail.html",
-            context,
-        )
+class TweetDetailView(LoginRequiredMixin, DetailView):
+    template_name = "tweets/detail.html"
+    model = Tweet
+    queryset = Tweet.objects.select_related("user")
 
 
 class TweetDeleteView(LoginRequiredMixin, View):

@@ -10,7 +10,7 @@
             <th>ID</th>
             <th>内容</th>
             <th>作成日</th>
-            {% if is_tweet_user %}
+            {% if tweet.user == request.user %}
             <th>削除</th>
             {% endif %}
         </tr>
@@ -18,9 +18,14 @@
             <td>{{tweet.pk}}</td>
             <td>{{tweet.content}}</td>
             <td>{{tweet.created_at}}</td>
-            {% if is_tweet_user %}
-            <td><a href={% url 'tweets:delete' tweet.pk %}>削除</a></td>
-            {% endif %}
+            <td>
+                {% if tweet.user == request.user %}
+                <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit">削除</button>
+                </form>
+                {% endif %}
+            </td>
         </tr>
     </table>
 </div>

@@ -26,15 +26,15 @@ HOME
       <th>ユーザー</th>
       <th>削除</th>
     </tr>
-    {% for tweets in tweets %}
+    {% for tweet in object_list %}
     <tr>
-      <td>{{ tweets.id }}</td>
-      <td><a href={% url 'tweets:detail' tweets.id %}>{{ tweets.content }}</a></td>
-      <td>{{ tweets.created_at }}</td>
-      <td><a href={% url 'accounts:user_profile' tweets.user %}>{{ tweets.user }}</td>
-      <td>
-        {% if tweets.user == request.user %}
-        <form action="{% url 'tweets:delete' tweets.id %}" method="POST">
+      <td>{{ tweet.id }}</td>
+      <td><a href={% url 'tweets:detail' tweet.id %}>{{ tweet.content }}</a></td>
+      <td>{{ tweet.created_at }}</td>
+      <td><a href={% url 'accounts:user_profile' tweet.user %}>{{ tweet.user }}</td>
+	  <td>
+        {% if tweet.user == request.user %}
+        <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
           {% csrf_token %}
           <button type="submit">削除</button>
         </form>
