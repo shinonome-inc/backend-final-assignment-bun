@@ -77,7 +77,6 @@ class TestTweetDeleteView(TestCase):
         self.tweet_id = self.tweet.pk
 
     def test_success_post(self):
-
         response = self.client.post(reverse("tweets:delete", kwargs={"pk": self.tweet_id}))
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse("tweets:home"), 302, 200)
