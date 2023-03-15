@@ -45,9 +45,15 @@ class UserProfileView(LoginRequiredMixin, ListView):
     model = Tweet
     queryset = Tweet.objects.select_related("user")
 
+    def get_user(self):
+        if not hasattr(self, "user"):
+            username = self.kwargs.get("username")
+            self.user = get_object_or_404(User, username=username)
+
+        return self.user
+
     def get_queryset(self, **kwargs):
-        username = self.kwargs.get("username")
-        user = get_object_or_404(User, username=username)  # Userオブジェクトを取得
+        user = self.get_user()  # Userオブジェクトを取得
         queryset = (
             self.queryset.filter(user=user)  # Userオブジェクトでフィルター
             .order_by("-created_at")
@@ -65,7 +71,7 @@ class UserProfileView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = get_object_or_404(User, username=self.kwargs["username"])
+        user = self.get_user()
         context["username"] = user.username
         context["followings_count"] = user.following.count()
         context["followers_count"] = User.objects.filter(
