@@ -70,3 +70,63 @@
 </div>
 
 {% endblock %}
+
+<script>
+// いいねボタンのクリックイベント
+document.querySelectorAll('.like-button').forEach(function(button) {
+  button.addEventListener('click', function(event) {
+    event.preventDefault();
+    var tweetId = this.getAttribute('data-tweet');
+    var isLiked = this.classList.contains('is-liked');
+    fetch('/tweets/' + tweetId + '/like', {
+      method: isLiked ? 'DELETE' : 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    })
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Network response was not ok.');
+      })
+      .then(function(data) {
+        var likeCountElement = document.querySelector('.tweet[data-tweet="' + tweetId + '"] .like-count');
+        var likeButtonElement = document.querySelector('.tweet[data-tweet="' + tweetId + '"] .like-button');
+        likeCountElement.textContent = data.like_counts;
+        likeButtonElement.classList.toggle('is-liked', data.is_liked);
+        likeButtonElement.textContent = data.is_liked ? 'Unlike' : 'Like';
+      })
+      .catch(function(error) {
+        console.error('There was a problem with the fetch operation:', error);
+      });
+  });
+});
+
+// 削除ボタンのクリックイベント
+document.querySelectorAll('.delete-button').forEach(function(button) {
+  button.addEventListener('click', function(event) {
+    event.preventDefault();
+    var tweetId = this.getAttribute('data-tweet');
+    fetch('/tweets/' + tweetId + '/delete', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    })
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Network response was not ok.');
+      })
+      .then(function(data) {
+        var tweetElement = document.querySelector('.tweet[data-tweet="' + tweetId + '"]');
+        tweetElement.parentNode.removeChild(tweetElement);
+      })
+      .catch(function(error) {
+        console.error('There was a problem with the fetch operation:', error);
+      });
+  });
+});
+</script>
