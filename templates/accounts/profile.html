@@ -2,74 +2,71 @@
 {% block title %} {{ username }}のプロフィール{% endblock %}
 {% block h1 %}{{ username }}のプロフィール{% endblock %}
 
-	{% block content %}
-	<div class="container">
-  <h1 class="my-5"></h1>
-  <p>{{ username }}さん</p>
-  <a href="{% url 'tweets:home' %}">ホーム</a>
-  <a href="{% url 'accounts:following_list' username %}">{{ followings_count }}</a>
-  <a href="{% url 'accounts:follower_list' username %}">{{ followers_count }}</a>
-  {% if username != request.user.username %}
-  {% if is_following %}
-  <form style="display:inline"
-        action="{% url 'accounts:unfollow' username %}"
-        method="POST">
-      {% csrf_token %}
-      <button type="submit">フォロー解除</button>
-  </form>
-  {% else %}
-  <form style="display:inline"
-        action="{% url 'accounts:follow' username %}"
-        method="POST">
-      {% csrf_token %}
-      <button type="submit">フォロー</button>
-  </form>
-  {% endif %}
-  <a href="{% url 'accounts:logout' %}">ログアウト</a>
+{% block content %}
+<div class="container">
+	<h1 class="my-5"></h1>
+	<p>{{ username }}さん</p>
+	<a href="{% url 'tweets:home' %}">ホーム</a>
+	<a href="{% url 'accounts:following_list' username %}">{{ followings_count }}</a>
+	<a href="{% url 'accounts:follower_list' username %}">{{ followers_count }}</a>
+	{% if username != request.user.username %}
+	{% if is_following %}
+	<form style="display:inline"
+				action="{% url 'accounts:unfollow' username %}"
+				method="POST">
+		{% csrf_token %}
+		<button type="submit">フォロー解除</button>
+	</form>
+	{% else %}
+	<form style="display:inline"
+				action="{% url 'accounts:follow' username %}"
+				method="POST">
+		{% csrf_token %}
+		<button type="submit">フォロー</button>
+	</form>
+	{% endif %}
+	{% endif %}
+	<a href="{% url 'accounts:logout' %}">ログアウト</a>
 </div>
 <div>
-  <table border="1">
-    <tr>
-      <th>ID</th>
-      <th>内容</th>
-      <th>作成日</th>
-      <th>ユーザー</th>
-      <th>いいね</th>
-      <th>削除</th>
-    </tr>
-    {% for tweet in object_list %}
-    <tr>
-      <td>{{ tweet.id }}</td>
-      <td><a href={% url 'tweets:detail' tweet.id %}>{{ tweet.content }}</a></td>
-      <td>{{ tweet.created_at }}</td>
-      <td><a href={% url 'accounts:user_profile' tweet.user %}>{{ tweet.user }}</td>
-	  <td>
-          {{ tweet.like_counts }}
-		  {% if tweet.is_liked %}
-		  <form method="post" action="{% url 'tweets:unlike' tweet.id %}">
-			  {% csrf_token %}
-			  <button type="submit" class="btn btn-primary">
-				  Unlike
-				  {% else %}
-				  <form method="post" action="{% url 'tweets:like' tweet.id %}">
-					  {% csrf_token %}
-					  <button type="submit" class="btn btn-primary">
-						  Like
-						  {% endif %}
-					  </button>
-				  </form>
-    </td>
-		{% if tweet.user == request.user %}
-		<td>
-      <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
-        {% csrf_token %}
-        <button type="submit">削除</button>
-      </form>
-    </td>
-    {% endif %}
-    </tr>
-    {% endfor %}
-  </table>
+	<table border="1">
+		<tr>
+			<th>ID</th>
+			<th>内容</th>
+			<th>作成日</th>
+			<th>ユーザー</th>
+			<th>いいね</th>
+			<th>削除</th>
+		</tr>
+		{% for tweet in object_list %}
+		<div class="tweet">
+      <div class="tweet-id"><td>{{ tweet.id }}</td></div>
+      <div class="tweet-content">
+        <td><a href={% url 'tweets:detail' tweet.id %}>{{ tweet.content }}</a></td>
+      </div>
+      <div class="tweet-footer">
+        <span class="tweet-date"><td>{{ tweet.created_at }}</td></span>
+        <span class="tweet-user">
+          <td><a href="{% url 'accounts:user_profile' tweet.user %}">{{ tweet.user }}</td></a>
+        </span>
+        <span class="tweet-like">
+          <td>
+            <button class="like-button{% if tweet.is_liked %} is-liked{% endif %}" data-tweet="{{ tweet.id }}">
+              {% if tweet.is_liked %}Unlike{% else %}Like{% endif %}
+            </button>
+            <span class="like-count">{{ tweet.like_counts }}</span></td>
+        </span>
+        {% if tweet.user == request.user %}
+        <span class="tweet-delete">
+          <td>
+            <button class="delete-button" data-tweet="{{ tweet.id }}">Delete</button>
+          </td>
+        </span>
+        {% endif %}
+			</div>
+		</div>
+		{% endfor %}
+	</table>
 </div>
 
 {% endblock %}
