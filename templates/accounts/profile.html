@@ -45,21 +45,8 @@
       <td>{{ tweet.created_at }}</td>
       <td><a href={% url 'accounts:user_profile' tweet.user %}>{{ tweet.user }}</td>
 	  <td>
-          {{ tweet.like_counts }}
-		  {% if tweet.is_liked %}
-		  <form method="post" action="{% url 'tweets:unlike' tweet.id %}">
-			  {% csrf_token %}
-			  <button type="submit" class="btn btn-primary">
-				  Unlike
-				  {% else %}
-				  <form method="post" action="{% url 'tweets:like' tweet.id %}">
-					  {% csrf_token %}
-					  <button type="submit" class="btn btn-primary">
-						  Like
-						  {% endif %}
-					  </button>
-				  </form>
-    </td>
+          <button class="likebtn" data-pk="{{ tweet.pk }}" data-like-count="{{ tweet.like_counts }}" data-is-liked="{% if tweet.is_liked %}T{% else %}F{% endif %}"></span>
+      </td>
 		{% if tweet.user == request.user %}
 		<td>
       <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
@@ -72,5 +59,27 @@
     {% endfor %}
   </table>
 </div>
-
-{% endblock %}
+<script>
+    function renderBtn(likeBtn) {
+        const isLiked = likeBtn.dataset.isLiked === 'T'
+        likeBtn.innerText = `${isLiked ? '♥' : '♡'} ${likeBtn.dataset.likeCount}`
+        likeBtn.style.color = isLiked ? 'red' : 'gray'
+    }
+    for (const likeBtn of document.getElementsByClassName('likebtn')) {
+        renderBtn(likeBtn)
+        likeBtn.addEventListener('click',
+            async () => {
+                const count = parseInt(likeBtn.dataset.likeCount)
+                const isLiked = likeBtn.dataset.isLiked === 'T'
+                await fetch(
+                    `/tweets/${likeBtn.dataset.pk}/${isLiked ? 'unlike' : 'like'}/`,
+                    { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } },
+                )
+                likeBtn.dataset.likeCount = count + (isLiked ? -1 : 1)
+                likeBtn.dataset.isLiked = isLiked ? 'F' : 'T'
+                renderBtn(likeBtn)
+            }
+        )
+    }
+    </script>
+{% endblock content %}
