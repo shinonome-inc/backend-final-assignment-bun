@@ -73,17 +73,11 @@ class LikeView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
         tweet.liked_by.add(request.user)
-        previous_url = request.META.get("HTTP_REFERER")
-        if previous_url is None:
-            return HttpResponse("ok")
-        return redirect(previous_url)
+        return HttpResponse("ok")
 
 
 class UnlikeView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
         tweet.liked_by.remove(request.user)
-        previous_url = request.META.get("HTTP_REFERER")
-        if previous_url is None:
-            return HttpResponse("ok")
-        return redirect(previous_url)
+        return HttpResponse("ok")
