@@ -24,6 +24,7 @@ HOME
       <th>内容</th>
       <th>作成日</th>
       <th>ユーザー</th>
+      <th>いいね</th>
       <th>削除</th>
     </tr>
     {% for tweet in object_list %}
@@ -32,6 +33,9 @@ HOME
       <td><a href={% url 'tweets:detail' tweet.id %}>{{ tweet.content }}</a></td>
       <td>{{ tweet.created_at }}</td>
       <td><a href={% url 'accounts:user_profile' tweet.user %}>{{ tweet.user }}</td>
+	  <td>
+          <button class="likebtn" data-pk="{{ tweet.id }}" data-like-count="{{ tweet.like_counts }}" data-is-liked="{% if tweet.is_liked %}T{% else %}F{% endif %}"></span>
+	  </td>
 	  <td>
         {% if tweet.user == request.user %}
         <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
@@ -51,4 +55,5 @@ HOME
   <a href="{% url 'accounts:login' %}"><button>login</button></a>
 </div>
 {% endif %}
+<script src="{% static 'js/like.js' %}"></script>
 {% endblock content %}

@@ -10,6 +10,7 @@
             <th>ID</th>
             <th>内容</th>
             <th>作成日</th>
+            <th>いいね</th>
             {% if tweet.user == request.user %}
             <th>削除</th>
             {% endif %}
@@ -19,7 +20,10 @@
             <td>{{tweet.content}}</td>
             <td>{{tweet.created_at}}</td>
             <td>
-                {% if tweet.user == request.user %}
+				<button class="likebtn" data-pk="{{ tweet.pk }}" data-like-count="{{ like_counts }}" data-is-liked="{% if is_liked %}T{% else %}F{% endif %}"></span>
+            </td>
+            {% if tweet.user == request.user %}
+            <td>
                 <form action="{% url 'tweets:delete' tweet.id %}" method="POST">
                     {% csrf_token %}
                     <button type="submit">削除</button>
@@ -29,4 +33,5 @@
         </tr>
     </table>
 </div>
+<script src="{% static 'js/like.js' %}"></script>
 {% endblock content %}
